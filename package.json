@@ -1,0 +1,21 @@
+{
+	"name": "tailjs",
+	"version": "0.1.0",
+	"main": "dist/index.js",
+	"license": "MIT",
+	"scripts": {
+		"docs": "jsdoc"
+	},
+	"dependencies": {
+		"@types/chalk": "^2.2.0",
+		"@types/moment": "^2.13.0",
+		"@types/node": "^11.12.2",
+		"chalk": "^2.4.2",
+		"discord.js": "^11.4.2",
+		"jsdoc": "^3.5.5",
+		"moment": "^2.24.0",
+		"node-opus": "^0.3.1",
+		"path": "^0.12.7",
+		"uws": "^100.0.1"
+	}
+}
