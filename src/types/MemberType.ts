@@ -39,17 +39,8 @@ export class MemberType extends BaseType {
 			});
 		}
 
-		const user = client.users.get(snowflake);
 		const member = message.guild.members.find((v) => v.user.tag === tag);
-
-		if (!user && !member) {
-			throw new SyntaxParseError({
-				expectedArgument: this,
-				message: `could not find user \`${arg.value}\``,
-				recievedArgument: arg,
-				type: "PARSE_FAILED",
-			});
-		} else if (!member && user && !message.guild.members.get(user.id)) {
+		if (!member && !message.guild.members.get(snowflake)) {
 			throw new SyntaxParseError({
 				expectedArgument: this,
 				message: `could not find user \`${arg.value}\``,
@@ -58,8 +49,8 @@ export class MemberType extends BaseType {
 			});
 		} else if (member) {
 			return member;
-		} else if (user) {
-			return message.guild.members.get(user.id);
+		} else if (message.guild.members.get(snowflake)) {
+			return message.guild.members.get(snowflake);
 		}
 	}
 }
