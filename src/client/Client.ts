@@ -1,9 +1,7 @@
 import chalk from "chalk";
 import { Client } from "discord.js";
-import { EventEmitter } from "events";
 import { PathLike } from "fs";
 
-import { Command, CommandExecutable } from "../structures/Command";
 import { ModuleConstructor } from "../structures/Module";
 import { Logger } from "../util/Logger";
 import { CommandManager } from "./CommandManager";
@@ -44,7 +42,7 @@ export class TailClient extends Client {
 		// Private declarations
 		this.djs = new Client();
 		this.moduleManager = new ModuleManager(this);
-		this.commandManager = new CommandManager(this);
+		this.commandManager = new CommandManager(this, this.djs);
 
 		this.djs.on("debug", (m) => this.logger.debug(m, "verbose"));
 	}
@@ -104,6 +102,8 @@ export class TailClient extends Client {
 			);
 		}
 
+		this.emit("ready");
+
 		return this;
 	}
 
@@ -128,35 +128,6 @@ export class TailClient extends Client {
 	public addModule(...modules: ModuleConstructor[]) {
 		modules.forEach((m) => this.moduleManager.addModule(m));
 		return this;
-	}
-	/**
-	 * Adds a command to the client
-	 * @param {string} name - Name of the command
-	 * @param {number} permLevel - Permission required to run the command
-	 * @param {CommandExecutable<Syntax>} executable - Command executable
-	 */
-	public command<Syntax extends []>(
-		name: string,
-		permLevel: number,
-		executable: CommandExecutable<Syntax>,
-	) {
-		this.commandManager.addCommand(
-			new Command<Syntax>(
-				this,
-				{
-					name,
-					permLevel,
-				},
-				executable,
-			),
-		);
-	}
-	/**
-	 * Adds a command to the client
-	 * @param {Command<Syntax>} command - Command to add
-	 */
-	public addCommand<Syntax extends []>(command: Command<Syntax>) {
-		this.commandManager.addCommand(command);
 	}
 }
 

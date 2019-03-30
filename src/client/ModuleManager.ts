@@ -13,7 +13,7 @@ export class ModuleManager {
 
 		this.client.on("ready", async () => {
 			this.client.logger.debug(
-				`Warming up modules - ${this.moduleCount}module(s) to start...`,
+				`Warming up modules - ${this.moduleCount} module(s) to start...`,
 			);
 
 			// Wait for modules to start
