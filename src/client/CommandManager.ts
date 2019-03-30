@@ -1,12 +1,14 @@
 import { Client, Collection, Message } from "discord.js";
 
+// import { PermissionError } from "../errors/PermissionError";
 import { Command } from "../structures/Command";
 import { TailClient } from "./Client";
 
+let COMMAND_INCREMENT = 0;
 export class CommandManager {
 	public client: TailClient;
 
-	private commands: Collection<string, any>;
+	private commands: Collection<number, any>;
 	private guildStore: Collection<string, string>;
 	constructor(client: TailClient, djs: Client) {
 		this.client = client;
@@ -33,13 +35,14 @@ export class CommandManager {
 		});
 	}
 
-	public addCommand(command: any) {
-		this.commands.set(command, command);
+	public addCommand<S extends []>(command: Command<S>) {
+		this.commands.set(COMMAND_INCREMENT, command);
+		COMMAND_INCREMENT += 1;
 	}
 
 	private execute(m: Message, a: string[]) {
 		let max = -1;
-		let key: string;
+		let key: number | undefined;
 		this.commands
 			.filter((v, k) =>
 				v.group
@@ -50,20 +53,27 @@ export class CommandManager {
 						: false
 					: v.name === a[0] || v.hasAlias(a[0]),
 			)
-			.forEach((a, k) => {
-				if ((a.group ? a.group.length : 0) > max) {
-					max = a.group ? a.group.length : 0;
+			.forEach((c: Command<any>, k) => {
+				if ((c.options.group ? c.options.group.length : 0) > max) {
+					max = c.options.group ? c.options.group.length : 0;
 					key = k;
 				}
 			});
 
-		const cmd = this.commands.get(key);
+		if (!key) {
+			return;
+		}
+
+		const cmd: Command<any> | undefined = this.commands.get(key);
 
 		if (!cmd) {
 			return;
 		}
-		const args = a.slice(cmd.group ? cmd.group.length + 1 : 1);
+		const args = a.slice(
+			cmd.options.group ? cmd.options.group.length + 1 : 1,
+		);
 
+		/*
 		try {
 			verifyPermission(
 				this.client,
@@ -94,20 +104,8 @@ export class CommandManager {
 				);
 			}
 		}
+		*/
 
-		if (cmd instanceof Array) {
-			const gcmd: Command | Command[] = cmd.find((v) => v.options.name);
-			if (gcmd) {
-				if (gcmd instanceof Array) {
-					throw Error("Command overlap detected.");
-				} else {
-					gcmd.execute(m, args);
-				}
-			} else {
-				cmd[0].execute(m, args);
-			}
-		} else {
-			cmd.execute(m, args);
-		}
+		cmd.execute(m, args);
 	}
 }

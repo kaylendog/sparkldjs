@@ -2,7 +2,9 @@ import chalk from "chalk";
 import { Client } from "discord.js";
 import { PathLike } from "fs";
 
+import { Command, CommandExecutable } from "../structures/Command";
 import { ModuleConstructor } from "../structures/Module";
+import { BaseType } from "../types/BaseType";
 import { Logger } from "../util/Logger";
 import { CommandManager } from "./CommandManager";
 import { ModuleManager } from "./ModuleManager";
@@ -128,6 +130,25 @@ export class TailClient extends Client {
 	public addModule(...modules: ModuleConstructor[]) {
 		modules.forEach((m) => this.moduleManager.addModule(m));
 		return this;
+	}
+
+	public command<Syntax extends []>(
+		name: string,
+		permLevel: number,
+		syntax: string | string[] | BaseType[],
+		executable: CommandExecutable<Syntax>,
+	) {
+		return this.commandManager.addCommand(
+			new Command<Syntax>(this, {
+				executable,
+				name,
+				syntax,
+			}),
+		);
+	}
+
+	public addCommand(command: Command<[]>) {
+		this.commandManager.addCommand(command);
 	}
 }
 

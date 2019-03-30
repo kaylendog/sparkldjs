@@ -1,25 +1,40 @@
 import { Message } from "discord.js";
 
 import { TailClient } from "../client/Client";
+import { SyntaxParseError } from "../errors/SyntaxParseError";
+import { BaseType } from "../types/BaseType";
+import { SyntaxParser } from "./SyntaxParser";
 
-export class Command {
+export type CommandExecutable<S extends []> = (m: Message, a: S) => any;
+
+interface CommandOptions<S extends []> {
+	name: string;
+	syntax: string | string[] | BaseType[];
+	executable: CommandExecutable<S>;
+
+	guild?: string;
+	group?: string[];
+	syntaxParser?: SyntaxParser;
+}
+export class Command<S extends []> {
 	public client: TailClient;
-	constructor(client: TailClient) {
+	public options: CommandOptions<S>;
+
+	private parser: SyntaxParser;
+	constructor(client: TailClient, options: CommandOptions<S>) {
 		this.client = client;
+		this.options = options;
+
+		this.parser =
+			options.syntaxParser ||
+			new SyntaxParser({ args: this.options.syntax });
 	}
 
-	public execute(m: Message, arg: string[]) {
-		if (this.options.guildId) {
+	public async execute(m: Message, a: string[]) {
+		if (this.options.guild) {
 			if (m.guild) {
-				if (m.guild.id === this.options.guildId) {
-				} else {
-					return m.reply(
-						`${EMOTES.NO}${
-							this.options.errorMessages
-								? this.options.errorMessages.GUILD_SPECIFIC()
-								: DEFAULT_COMMAND_ERRORS.GUILD_SPECIFIC()
-						}`,
-					);
+				if (m.guild.id !== this.options.guild) {
+					return;
 				}
 			}
 		}
@@ -34,11 +49,7 @@ export class Command {
 		);
 
 		try {
-			const parsedArguments = this.syntaxParser.parse(
-				this.client,
-				m,
-				args,
-			);
+			const parsedArguments = this.parser.parse(this.client, m, a) as S;
 
 			this.client.emit("command", {
 				command: this.options.group
@@ -54,7 +65,7 @@ export class Command {
 						: this.options.name
 				}] ID: ${m.author.id} - ${Date.now() - beginExecute}ms`,
 			);
-			await this.executable(this.client, m, parsedArguments);
+			await this.options.executable(m, parsedArguments);
 
 			this.client.logger.debug(
 				`[cmd] [${
@@ -65,7 +76,7 @@ export class Command {
 			);
 		} catch (err) {
 			if (err instanceof SyntaxParseError) {
-				m.channel.send(err.m).catch((errx) => {
+				m.channel.send(err.message).catch((errx) => {
 					this.client.logger.error(err);
 					this.client.logger.error(errx);
 				});
@@ -79,3 +90,9 @@ export class Command {
 		}
 	}
 }
+
+/*
+function syntaxMatch<S extends BaseType[], T extends keyof S>(s: any[]): s is S {
+	return s.map((v, i) => ().indexOf(false) === -1 ? true : false;
+}
+*/
