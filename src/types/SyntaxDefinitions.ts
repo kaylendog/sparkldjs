@@ -13,4 +13,11 @@ export type Member = GuildMember;
 export type Duration = number;
 export type User = DJSUser;
 
-export type SyntaxParsable = Role | Channel | Member | Duration | User;
+export type SyntaxParsable =
+	| Role
+	| Channel
+	| Member
+	| Duration
+	| User
+	| string
+	| number;
