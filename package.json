@@ -1,6 +1,6 @@
 {
 	"name": "tailjs",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"scripts": {
 		"release": "release-it patch -n"
 	},
@@ -27,6 +27,9 @@
 		},
 		"github": {
 			"release": false
+		},
+		"npm": {
+			"publish": false
 		}
 	}
 }
