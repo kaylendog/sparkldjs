@@ -1,14 +1,14 @@
 import { TailClient } from "../client/Client";
-import { Module } from "./Module";
+import { Plugin } from "./Plugin";
 
-export declare interface ModuleWithConfig<Config extends {}> extends Module {
+export declare interface PluginWithConfig<Config extends {}> extends Plugin {
 	onConfigUpdate(config?: Config, oldConfig?: Config): any;
 }
 
 /**
- * A module with a built-in config system.
+ * A Plugin with a built-in config system.
  */
-export class ModuleWithConfig<Config extends {}> extends Module {
+export class PluginWithConfig<Config extends {}> extends Plugin {
 	public config: Readonly<Config>;
 
 	constructor(client: TailClient) {
@@ -16,8 +16,8 @@ export class ModuleWithConfig<Config extends {}> extends Module {
 		this.config = {} as Config;
 	}
 	/**
-	 * Updates the module's config.
-	 * @param {Config} config - The new config to patch into the module
+	 * Updates the Plugin's config.
+	 * @param {Config} config - The new config to patch into the Plugin
 	 */
 	public updateConfig<K extends keyof Config>(
 		config:

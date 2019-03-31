@@ -3,11 +3,15 @@ import { Message } from "discord.js";
 import { TailClient } from "../client/Client";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { BaseType } from "../types/BaseType";
+import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { SyntaxParser } from "./SyntaxParser";
 
-export type CommandExecutable<S extends []> = (m: Message, a: S) => any;
+export type CommandExecutable<S extends SyntaxParsable[]> = (
+	m: Message,
+	a: S,
+) => any;
 
-interface CommandOptions<S extends []> {
+interface CommandOptions<S extends SyntaxParsable[]> {
 	name: string;
 	syntax: string | string[] | BaseType[];
 	executable: CommandExecutable<S>;
@@ -16,7 +20,7 @@ interface CommandOptions<S extends []> {
 	group?: string[];
 	syntaxParser?: SyntaxParser;
 }
-export class Command<S extends []> {
+export class Command<S extends SyntaxParsable[]> {
 	public client: TailClient;
 	public options: CommandOptions<S>;
 
@@ -36,7 +40,12 @@ export class Command<S extends []> {
 				if (m.guild.id !== this.options.guild) {
 					return;
 				}
+			} else {
+				return;
 			}
+		}
+		if (!m.guild) {
+			return;
 		}
 
 		const beginExecute = Date.now();

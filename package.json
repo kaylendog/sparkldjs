@@ -1,6 +1,9 @@
 {
 	"name": "tailjs",
-	"version": "0.1.0",
+	"version": "0.2.0",
+	"scripts": {
+		"release": "release-it patch -n"
+	},
 	"main": "dist/index.js",
 	"license": "MIT",
 	"dependencies": {
@@ -12,5 +15,18 @@
 		"moment": "^2.24.0",
 		"path": "^0.12.7",
 		"uws": "^100.0.1"
+	},
+	"devDependencies": {
+		"release-it": "^10.3.1"
+	},
+	"release-it": {
+		"git": {
+			"tagName": "v${version}",
+			"addUntrackedFiles": true,
+			"requireCleanWorkingDir": false
+		},
+		"github": {
+			"release": false
+		}
 	}
 }

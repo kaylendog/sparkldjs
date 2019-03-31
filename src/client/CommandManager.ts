@@ -2,6 +2,7 @@ import { Client, Collection, Message } from "discord.js";
 
 // import { PermissionError } from "../errors/PermissionError";
 import { Command } from "../structures/Command";
+import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { TailClient } from "./Client";
 
 let COMMAND_INCREMENT = 0;
@@ -10,14 +11,13 @@ export class CommandManager {
 
 	private commands: Collection<number, any>;
 	private guildStore: Collection<string, string>;
-	constructor(client: TailClient, djs: Client) {
+	constructor(client: TailClient) {
 		this.client = client;
 
 		this.commands = new Collection();
 		this.guildStore = new Collection();
 
-		djs.on("message", (m: Message) => {
-			const mGuild = m.guild;
+		client.discord.on("message", (m: Message) => {
 			let prefix = this.guildStore.get(m.guild.id);
 			if (!prefix) {
 				prefix = "!";
@@ -35,7 +35,7 @@ export class CommandManager {
 		});
 	}
 
-	public addCommand<S extends []>(command: Command<S>) {
+	public addCommand<S extends SyntaxParsable[]>(command: Command<S>) {
 		this.commands.set(COMMAND_INCREMENT, command);
 		COMMAND_INCREMENT += 1;
 	}
