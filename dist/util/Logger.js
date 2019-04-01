@@ -13,9 +13,9 @@ class Logger {
         return this.format(chalk_1.default.cyan("info"), ...m);
     }
     debug(m, level = "quiet") {
-        if (this.client.tailOptions.loggerDebugLevel &&
-            (this.client.tailOptions.loggerDebugLevel === level ||
-                this.client.tailOptions.loggerDebugLevel === "verbose")) {
+        if (this.client.options.loggerDebugLevel &&
+            (this.client.options.loggerDebugLevel === level ||
+                this.client.options.loggerDebugLevel === "verbose")) {
             return this.format(chalk_1.default.blue("debug"), m);
         }
     }

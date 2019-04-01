@@ -1,9 +1,10 @@
 import { Message } from "discord.js";
 import { TailClient } from "../client/Client";
 import { BaseType } from "../types/BaseType";
+import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { SyntaxParser } from "./SyntaxParser";
-export declare type CommandExecutable<S extends []> = (m: Message, a: S) => any;
-interface CommandOptions<S extends []> {
+export declare type CommandExecutable<S extends SyntaxParsable[]> = (m: Message, a: S) => any;
+interface CommandOptions<S extends SyntaxParsable[]> {
     name: string;
     syntax: string | string[] | BaseType[];
     executable: CommandExecutable<S>;
@@ -11,7 +12,7 @@ interface CommandOptions<S extends []> {
     group?: string[];
     syntaxParser?: SyntaxParser;
 }
-export declare class Command<S extends []> {
+export declare class Command<S extends SyntaxParsable[]> {
     client: TailClient;
     options: CommandOptions<S>;
     private parser;

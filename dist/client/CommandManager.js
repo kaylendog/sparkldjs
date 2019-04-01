@@ -3,12 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 let COMMAND_INCREMENT = 0;
 class CommandManager {
-    constructor(client, djs) {
+    constructor(client) {
         this.client = client;
         this.commands = new discord_js_1.Collection();
         this.guildStore = new discord_js_1.Collection();
-        djs.on("message", (m) => {
-            const mGuild = m.guild;
+        client.discord.on("message", (m) => {
             let prefix = this.guildStore.get(m.guild.id);
             if (!prefix) {
                 prefix = "!";

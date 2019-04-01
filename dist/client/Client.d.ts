@@ -1,8 +1,11 @@
 import { Client } from "discord.js";
 import { PathLike } from "fs";
+import { EventEmitter } from "events";
 import { Command, CommandExecutable } from "../structures/Command";
-import { ModuleConstructor } from "../structures/Module";
+import { BaseConfig, BaseDefaultConfig, ConfigPlugin } from "../structures/ConfigPlugin";
+import { PluginConstructor } from "../structures/Plugin";
 import { BaseType } from "../types/BaseType";
+import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { Logger } from "../util/Logger";
 interface TailClientOptions {
     token?: string;
@@ -14,16 +17,17 @@ interface TailClientOptions {
 /**
  * The main client used to interact with the API.
  */
-export declare class TailClient extends Client {
-    tailOptions: TailClientOptions;
+export declare class TailClient extends EventEmitter {
+    options: TailClientOptions;
     logger: Logger;
-    private djs;
-    private moduleManager;
+    config?: ConfigPlugin<BaseConfig, BaseDefaultConfig>;
+    discord: Client;
+    private pluginManager;
     private commandManager;
     /**
-     * @param {TailClientOptions} [tailOptions] Options for the client
+     * @param {TailClientOptions} [options] Options for the client
      */
-    constructor(tailOptions?: TailClientOptions);
+    constructor(options?: TailClientOptions);
     /**
      * Triggers the login process with the Discord API. Use this to start your bot.
      * @param {string} [token] - The bot token to use.
@@ -39,14 +43,37 @@ export declare class TailClient extends Client {
      */
     disconnect(): this;
     /**
-     * Adds a module to the client
+     * Adds a plugin to the client
      */
-    module(name: string, start: () => any): this;
+    plugin(name: string, start: () => any): this;
     /**
-     * Adds a module to the client
+     * Adds a plugin to the client
      */
-    addModule(...modules: ModuleConstructor[]): this;
-    command<Syntax extends []>(name: string, permLevel: number, syntax: string | string[] | BaseType[], executable: CommandExecutable<Syntax>): void;
-    addCommand(command: Command<[]>): void;
+    addPlugin(...modules: PluginConstructor[]): this;
+    /**
+     * Creates and adds a command to the client
+     * @param {string} name
+     * @param {number} permLevel
+     * @param {string|string[]|BaseType[]} syntax - Syntax to use for the command
+     * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
+     */
+    command<Syntax extends SyntaxParsable[]>(name: string, permLevel: number, syntax: string | string[] | BaseType[], executable: CommandExecutable<Syntax>): void;
+    /**
+     * Adds a command to the client
+     * @param {Command} command - Command to add
+     */
+    addCommand(command: Command<SyntaxParsable[]>): void;
+    /**
+     * Used for sending messages between plugins
+     * @param {string} dest - Destination module
+     * @param {string }type - Event type
+     * @param {...any[]} data - Data to send
+     */
+    sendMessage(dest: string, type: string, ...data: any[]): void;
+    /**
+     * Adds a config plugin to the client
+     * @param {ConfigPlugin|ConfigPluginConstructor} config - Config plugin to use
+     */
+    useConfigPlugin<S extends BaseConfig, D extends BaseDefaultConfig>(config: (c: this) => ConfigPlugin<S, D>): this;
 }
 export {};

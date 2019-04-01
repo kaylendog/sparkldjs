@@ -4,9 +4,10 @@ import { MemberType } from "./types/MemberType";
 import { NumberType } from "./types/NumberType";
 import { RoleType } from "./types/RoleType";
 import { StringType } from "./types/StringType";
+import { UserType } from "./types/UserType";
 export { TailClient } from "./client/Client";
-export { Module } from "./structures/Module";
-export { ModuleWithConfig } from "./structures/ModuleWithConfig";
+export { Plugin } from "./structures/Plugin";
+export { PluginWithConfig } from "./structures/PluginWithConfig";
 export { Command } from "./structures/Command";
 export declare const SyntaxTypes: {
     ChannelType: typeof ChannelType;
@@ -15,4 +16,5 @@ export declare const SyntaxTypes: {
     NumberType: typeof NumberType;
     RoleType: typeof RoleType;
     StringType: typeof StringType;
+    UserType: typeof UserType;
 };

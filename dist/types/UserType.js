@@ -2,26 +2,29 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const SyntaxParseError_1 = require("../errors/SyntaxParseError");
 const BaseType_1 = require("./BaseType");
-class ChannelType extends BaseType_1.BaseType {
+class UserType extends BaseType_1.BaseType {
     constructor(opts) {
         super(opts);
         this.options = {
             argName: opts.argName,
             required: opts.required || false,
             rest: opts.rest,
-            typeName: "channel",
+            typeName: "user",
         };
     }
     match(client, message, arg) {
         let snowflake = "";
-        const name = "";
+        let tag = "";
         if (arg.value.startsWith("<")) {
-            snowflake = arg.value.replace(/[<@#>]/g, "");
+            snowflake = arg.value.replace(/[<@#!&>]/g, "");
         }
         else if (!isNaN(parseInt(arg.value, 10))) {
             snowflake = arg.value;
         }
-        if (snowflake === "") {
+        if (arg.value.match(/.*#[0-9]{4}/)) {
+            tag = arg.value;
+        }
+        if (snowflake === "" && tag === "") {
             throw new SyntaxParseError_1.SyntaxParseError({
                 expectedArgument: this,
                 message: `could not parse \`${arg.value}\` to type \`${this.string}\``,
@@ -29,22 +32,21 @@ class ChannelType extends BaseType_1.BaseType {
                 type: "PARSE_FAILED",
             });
         }
-        const channel = message.guild.channels.get(snowflake);
-        const channelFromName = message.guild.channels.find((v) => v.name === arg.value);
-        if (!channel && !channelFromName) {
+        const user = client.discord.users.find((v) => v.tag === tag);
+        if (!user && !client.discord.users.get(snowflake)) {
             throw new SyntaxParseError_1.SyntaxParseError({
                 expectedArgument: this,
-                message: `could not find channel \`${arg.value}\``,
+                message: `could not find user \`${arg.value}\``,
                 recievedArgument: arg,
                 type: "PARSE_FAILED",
             });
         }
-        else if (channel) {
-            return channel;
+        else if (user) {
+            return user;
         }
-        else {
-            return channelFromName;
+        else if (client.discord.users.get(snowflake)) {
+            return client.discord.users.get(snowflake);
         }
     }
 }
-exports.ChannelType = ChannelType;
+exports.UserType = UserType;

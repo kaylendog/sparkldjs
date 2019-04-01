@@ -17,6 +17,12 @@ class Command {
                     return;
                 }
             }
+            else {
+                return;
+            }
+        }
+        if (!m.guild) {
+            return;
         }
         const beginExecute = Date.now();
         this.client.logger.debug(`[cmd] [${this.options.group

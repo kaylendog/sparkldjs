@@ -5,10 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = __importDefault(require("chalk"));
 const discord_js_1 = require("discord.js");
+const events_1 = require("events");
 const Command_1 = require("../structures/Command");
 const Logger_1 = require("../util/Logger");
 const CommandManager_1 = require("./CommandManager");
-const ModuleManager_1 = require("./ModuleManager");
+const PluginManager_1 = require("./PluginManager");
 const DEFAULT_OPTIONS = {
     loggerDebugLevel: false,
     name: "tailjs",
@@ -16,20 +17,20 @@ const DEFAULT_OPTIONS = {
 /**
  * The main client used to interact with the API.
  */
-class TailClient extends discord_js_1.Client {
+class TailClient extends events_1.EventEmitter {
     /**
-     * @param {TailClientOptions} [tailOptions] Options for the client
+     * @param {TailClientOptions} [options] Options for the client
      */
-    constructor(tailOptions) {
+    constructor(options) {
         super();
-        this.tailOptions = Object.assign(DEFAULT_OPTIONS, tailOptions);
+        this.options = Object.assign(DEFAULT_OPTIONS, options);
         // Public declarations
         this.logger = new Logger_1.Logger(this);
         // Private declarations
-        this.djs = new discord_js_1.Client();
-        this.moduleManager = new ModuleManager_1.ModuleManager(this);
-        this.commandManager = new CommandManager_1.CommandManager(this, this.djs);
-        this.djs.on("debug", (m) => this.logger.debug(m, "verbose"));
+        this.discord = new discord_js_1.Client();
+        this.pluginManager = new PluginManager_1.PluginManager(this);
+        this.commandManager = new CommandManager_1.CommandManager(this);
+        this.discord.on("debug", (m) => this.logger.debug(m, "verbose"));
     }
     /**
      * Triggers the login process with the Discord API. Use this to start your bot.
@@ -41,7 +42,7 @@ class TailClient extends discord_js_1.Client {
      * });
      */
     async start(token) {
-        if (this.tailOptions.loggerDebugLevel) {
+        if (this.options.loggerDebugLevel) {
             this.logger.log("Starting...");
         }
         else {
@@ -53,19 +54,19 @@ class TailClient extends discord_js_1.Client {
                 chalk_1.default.magenta("s"), "0.1.0");
         }
         if (token) {
-            this.tailOptions.token = token;
+            this.options.token = token;
         }
-        else if (!this.tailOptions.token) {
+        else if (!this.options.token) {
             return this.logger.error("No token provided - cannot log in.");
         }
         logSettings(this);
-        await this.djs.login(this.tailOptions.token).catch((err) => {
+        await this.discord.login(this.options.token).catch((err) => {
             this.logger.error(err);
             return this;
         });
         this.logger.success("Connected and logged into Discord API.");
-        this.logger.debug(`Authed for user ${chalk_1.default.green(this.djs.user.tag)}, ${this.djs.user.id}`);
-        if (!this.djs.user.bot) {
+        this.logger.debug(`Authed for user ${chalk_1.default.green(this.discord.user.tag)}, ${this.discord.user.id}`);
+        if (!this.discord.user.bot) {
             this.logger.warn("The automation of user accounts is in violation of Discord's terms of service!");
             this.logger.warn("It is not recommended to proceed with your current token, as your account may be terminated.");
             this.logger.warn("You can read more here: https://discordapp.com/guidelines");
@@ -77,23 +78,30 @@ class TailClient extends discord_js_1.Client {
      * Disconnects the client from the API
      */
     disconnect() {
-        this.djs.destroy();
+        this.discord.destroy();
         return this;
     }
     /**
-     * Adds a module to the client
+     * Adds a plugin to the client
      */
-    module(name, start) {
-        this.moduleManager.createModule(name, start);
+    plugin(name, start) {
+        this.pluginManager.createPlugin(name, start);
         return this;
     }
     /**
-     * Adds a module to the client
+     * Adds a plugin to the client
      */
-    addModule(...modules) {
-        modules.forEach((m) => this.moduleManager.addModule(m));
+    addPlugin(...modules) {
+        modules.forEach((m) => this.pluginManager.addPlugin(m));
         return this;
     }
+    /**
+     * Creates and adds a command to the client
+     * @param {string} name
+     * @param {number} permLevel
+     * @param {string|string[]|BaseType[]} syntax - Syntax to use for the command
+     * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
+     */
     command(name, permLevel, syntax, executable) {
         return this.commandManager.addCommand(new Command_1.Command(this, {
             executable,
@@ -101,8 +109,29 @@ class TailClient extends discord_js_1.Client {
             syntax,
         }));
     }
+    /**
+     * Adds a command to the client
+     * @param {Command} command - Command to add
+     */
     addCommand(command) {
         this.commandManager.addCommand(command);
+    }
+    /**
+     * Used for sending messages between plugins
+     * @param {string} dest - Destination module
+     * @param {string }type - Event type
+     * @param {...any[]} data - Data to send
+     */
+    sendMessage(dest, type, ...data) {
+        return this.pluginManager.sendMessage(dest, type, ...data);
+    }
+    /**
+     * Adds a config plugin to the client
+     * @param {ConfigPlugin|ConfigPluginConstructor} config - Config plugin to use
+     */
+    useConfigPlugin(config) {
+        this.config = config(this);
+        return this;
     }
 }
 exports.TailClient = TailClient;
@@ -115,11 +144,11 @@ function logSettings(client) {
         chalk_1.default.magenta("s")} 0.1.0 ]=---------`;
     client.logger.debug(headerString);
     client.logger.debug("Using the following settings:");
-    Object.keys(client.tailOptions).forEach((key) => {
+    Object.keys(client.options).forEach((key) => {
         const res = key.replace(/([A-Z])/g, " $1");
         client.logger.debug(` - ${chalk_1.default.cyan(res.charAt(0).toUpperCase() + res.slice(1))}: ${
         // @ts-ignore
-        client.tailOptions[key]}`);
+        client.options[key]}`);
     });
     client.logger.debug("-".repeat(`---------=[ tailjs 0.1.0 ]=---------`.length));
 }

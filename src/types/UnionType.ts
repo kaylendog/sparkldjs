@@ -32,7 +32,7 @@ export class UnionType extends BaseType {
 	public match(client: TailClient, message: Message, arg: IBaseTypeArg) {
 		const allHaveFailed = false;
 		let totalFailed = 0;
-		const values = [];
+		const values: any = [];
 
 		this.options.types.map((v) => {
 			try {
