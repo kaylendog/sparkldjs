@@ -1,14 +1,10 @@
 import chalk from "chalk";
 import { Client } from "discord.js";
+import { EventEmitter } from "events";
 import { PathLike } from "fs";
 
-import { EventEmitter } from "events";
 import { Command, CommandExecutable } from "../structures/Command";
-import {
-	BaseConfig,
-	BaseDefaultConfig,
-	ConfigPlugin,
-} from "../structures/ConfigPlugin";
+import { BaseConfig, BaseDefaultConfig, ConfigPlugin } from "../structures/ConfigPlugin";
 import { PluginConstructor } from "../structures/Plugin";
 import { BaseType } from "../types/BaseType";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
@@ -137,7 +133,7 @@ export class TailClient extends EventEmitter {
 	/**
 	 * Adds a plugin to the client
 	 */
-	public addPlugin(...modules: PluginConstructor[]) {
+	public addPlugin(...modules: PluginConstructor[] | Plugin[]) {
 		modules.forEach((m) => this.pluginManager.addPlugin(m));
 		return this;
 	}
