@@ -14,9 +14,9 @@ export class Logger {
 	}
 	public debug(m: any, level: "quiet" | "verbose" = "quiet") {
 		if (
-			this.client.tailOptions.loggerDebugLevel &&
-			(this.client.tailOptions.loggerDebugLevel === level ||
-				this.client.tailOptions.loggerDebugLevel === "verbose")
+			this.client.options.loggerDebugLevel &&
+			(this.client.options.loggerDebugLevel === level ||
+				this.client.options.loggerDebugLevel === "verbose")
 		) {
 			return this.format(chalk.blue("debug"), m);
 		}
