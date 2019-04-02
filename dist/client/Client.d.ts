@@ -1,9 +1,9 @@
 import { Client } from "discord.js";
-import { PathLike } from "fs";
 import { EventEmitter } from "events";
+import { PathLike } from "fs";
 import { Command, CommandExecutable } from "../structures/Command";
 import { BaseConfig, BaseDefaultConfig, ConfigPlugin } from "../structures/ConfigPlugin";
-import { PluginConstructor } from "../structures/Plugin";
+import { Plugin, PluginConstructor } from "../structures/Plugin";
 import { BaseType } from "../types/BaseType";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { Logger } from "../util/Logger";
@@ -49,7 +49,7 @@ export declare class TailClient extends EventEmitter {
     /**
      * Adds a plugin to the client
      */
-    addPlugin(...modules: PluginConstructor[]): this;
+    addPlugin(...modules: Array<Plugin | PluginConstructor>): this;
     /**
      * Creates and adds a command to the client
      * @param {string} name
