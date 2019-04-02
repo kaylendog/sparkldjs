@@ -1,6 +1,7 @@
 import { Client, Collection, Message } from "discord.js";
 // import { PermissionError } from "../errors/PermissionError";
 import { AnyAaaaRecord } from "dns";
+import { isUndefined } from "util";
 
 import { Command } from "../structures/Command";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
@@ -61,7 +62,7 @@ export class CommandManager {
 				}
 			});
 
-		if (!key) {
+		if (isUndefined(key)) {
 			return;
 		}
 
@@ -70,6 +71,7 @@ export class CommandManager {
 		if (!cmd) {
 			return;
 		}
+
 		const args = a.slice(
 			cmd.options.group ? cmd.options.group.length + 1 : 1,
 		);

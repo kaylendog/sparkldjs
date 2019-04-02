@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const util_1 = require("util");
 let COMMAND_INCREMENT = 0;
 class CommandManager {
     constructor(client) {
@@ -44,7 +45,7 @@ class CommandManager {
                 key = k;
             }
         });
-        if (!key) {
+        if (util_1.isUndefined(key)) {
             return;
         }
         const cmd = this.commands.get(key);

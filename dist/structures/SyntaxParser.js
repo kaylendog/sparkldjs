@@ -40,14 +40,14 @@ class SyntaxParser {
                     : arg.split(":")[1].slice(0, -1);
                 // split at name:type
                 switch (type) {
-                    case "int":
+                    case "number":
                         this.syntax.push(new NumberType_1.NumberType({
                             argName,
                             required,
                             rest,
                         }));
                         break;
-                    case "str": {
+                    case "string": {
                         this.syntax.push(new StringType_1.StringType({
                             argName,
                             required,
@@ -78,7 +78,7 @@ class SyntaxParser {
                             rest,
                         }));
                     }
-                    case "dur": {
+                    case "duration": {
                         this.syntax.push(new DurationType_1.DurationType({
                             argName,
                             required,
@@ -98,16 +98,23 @@ class SyntaxParser {
             // if argument does not exist, and there are no rest args, throw error.
             if (!this.syntax[i] &&
                 !this.syntax.find((v) => v.options.rest === true)) {
-                throw new SyntaxParseError_1.SyntaxParseError({
+                return;
+                /*
+                throw new SyntaxParseError({
                     message: this.options.errorMessages
-                        ? this.options.errorMessages.TOO_MANY_ARGS(this.syntax.map((v) => v.string).join(" "))
-                        : exports.DEFAULT_SYNTAX_ERRORS.TOO_MANY_ARGS(this.syntax.map((v) => v.string).join(" ")),
+                        ? this.options.errorMessages.TOO_MANY_ARGS(
+                                this.syntax.map((v) => v.string).join(" "),
+                          )
+                        : DEFAULT_SYNTAX_ERRORS.TOO_MANY_ARGS(
+                                this.syntax.map((v) => v.string).join(" "),
+                          ),
                     recievedArgument: {
                         index: i,
                         value: arg,
                     },
                     type: "TOO_MANY_ARGS",
                 });
+                */
             }
             else if (!this.syntax[i]) {
                 return (parsedArgs[this.syntax.length - 1] = parsedArgs[this.syntax.length - 1].concat(" ", this.syntax[this.syntax.length - 1].match(client, message, {

@@ -1,8 +1,9 @@
 import chalk from "chalk";
-import { Client } from "discord.js";
+import { Client, Message } from "discord.js";
 import { EventEmitter } from "events";
 import { PathLike } from "fs";
 
+import { SyntaxParseError, SyntaxParseErrorType } from "../errors/SyntaxParseError";
 import { Command, CommandExecutable } from "../structures/Command";
 import { BaseConfig, BaseDefaultConfig, ConfigPlugin } from "../structures/ConfigPlugin";
 import { Plugin, PluginConstructor } from "../structures/Plugin";
@@ -18,6 +19,7 @@ interface TailClientOptions {
 	loggerDebugLevel?: false | "quiet" | "verbose";
 	loggerOutputToFile?: false | PathLike;
 	permissionOverrides?: string[];
+	syntaxErrorHandler?: (m: Message, err: SyntaxParseError) => any;
 }
 const DEFAULT_OPTIONS: TailClientOptions = {
 	loggerDebugLevel: false,

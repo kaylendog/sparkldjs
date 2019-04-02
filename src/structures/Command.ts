@@ -7,6 +7,7 @@ import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { SyntaxParser } from "./SyntaxParser";
 
 export type CommandExecutable<S extends SyntaxParsable[]> = (
+	c: TailClient,
 	m: Message,
 	a: S,
 ) => any;
@@ -73,7 +74,7 @@ export class Command<S extends SyntaxParsable[]> {
 						: this.options.name
 				}] ID: ${m.author.id} - ${Date.now() - beginExecute}ms`,
 			);
-			await this.options.executable(m, parsedArguments);
+			await this.options.executable(c, m, parsedArguments);
 
 			c.logger.debug(
 				`[cmd] [${
@@ -84,6 +85,9 @@ export class Command<S extends SyntaxParsable[]> {
 			);
 		} catch (err) {
 			if (err instanceof SyntaxParseError) {
+				if (c.options.syntaxErrorHandler) {
+					return c.options.syntaxErrorHandler(m, err);
+				}
 				m.channel.send(err.message).catch((errx) => {
 					c.logger.error(err);
 					c.logger.error(errx);

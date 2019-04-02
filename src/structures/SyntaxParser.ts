@@ -61,7 +61,7 @@ export class SyntaxParser {
 				// split at name:type
 
 				switch (type) {
-					case "int":
+					case "number":
 						this.syntax.push(
 							new NumberType({
 								argName,
@@ -70,7 +70,7 @@ export class SyntaxParser {
 							}),
 						);
 						break;
-					case "str": {
+					case "string": {
 						this.syntax.push(
 							new StringType({
 								argName,
@@ -109,7 +109,7 @@ export class SyntaxParser {
 							}),
 						);
 					}
-					case "dur": {
+					case "duration": {
 						this.syntax.push(
 							new DurationType({
 								argName,
@@ -134,6 +134,8 @@ export class SyntaxParser {
 				!this.syntax[i] &&
 				!this.syntax.find((v) => v.options.rest === true)
 			) {
+				return;
+				/*
 				throw new SyntaxParseError({
 					message: this.options.errorMessages
 						? this.options.errorMessages.TOO_MANY_ARGS(
@@ -148,6 +150,7 @@ export class SyntaxParser {
 					},
 					type: "TOO_MANY_ARGS",
 				});
+				*/
 			} else if (!this.syntax[i]) {
 				return (parsedArgs[this.syntax.length - 1] = parsedArgs[
 					this.syntax.length - 1
