@@ -42,6 +42,7 @@ export class PluginManager {
 		if (module instanceof Plugin) {
 			m = module;
 		} else {
+			console.log("Constructing...");
 			m = new module(this.client);
 		}
 		this.plugins.set(m.pluginName, m);
