@@ -20,5 +20,6 @@ export declare class ConfigPlugin<S extends BaseConfig, D extends BaseDefaultCon
     private config;
     private defaults;
     constructor(client: TailClient, config: S, defaults: D);
+    intialise(): Promise<void>;
 }
 export {};

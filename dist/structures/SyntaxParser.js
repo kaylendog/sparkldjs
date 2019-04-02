@@ -7,6 +7,7 @@ const MemberType_1 = require("../types/MemberType");
 const NumberType_1 = require("../types/NumberType");
 const RoleType_1 = require("../types/RoleType");
 const StringType_1 = require("../types/StringType");
+const UserType_1 = require("../types/UserType");
 exports.DEFAULT_SYNTAX_ERRORS = {
     NOT_ENOUGH_ARGS: (index, arg) => `expected arg type \`${arg.string}\` at position \`${index}\``,
     TOO_MANY_ARGS: (args) => `expected \`${args || "none"}\``,
@@ -56,6 +57,14 @@ class SyntaxParser {
                         break;
                     }
                     case "user": {
+                        this.syntax.push(new UserType_1.UserType({
+                            argName,
+                            required,
+                            rest,
+                        }));
+                        break;
+                    }
+                    case "member": {
                         this.syntax.push(new MemberType_1.MemberType({
                             argName,
                             required,

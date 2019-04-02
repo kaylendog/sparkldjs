@@ -19,5 +19,8 @@ class ConfigPlugin {
                 : this.defaults.guilds;
         }
     }
+    async intialise() {
+        return;
+    }
 }
 exports.ConfigPlugin = ConfigPlugin;
