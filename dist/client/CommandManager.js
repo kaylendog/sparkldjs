@@ -31,13 +31,13 @@ class CommandManager {
         let max = -1;
         let key;
         this.commands
-            .filter((v, k) => v.group
-            ? JSON.stringify(v.group) ===
-                JSON.stringify(a.slice(0, v.group.length))
-                ? v.name === a[v.group.length] ||
-                    v.hasAlias(a[v.group.length])
+            .filter((v, k) => v.options.group
+            ? JSON.stringify(v.options.group) ===
+                JSON.stringify(a.slice(0, v.options.group.length))
+                ? v.options.name === a[v.options.group.length] ||
+                    v.hasAlias(a[v.options.group.length])
                 : false
-            : v.name === a[0] || v.hasAlias(a[0]))
+            : v.options.name === a[0] || v.hasAlias(a[0]))
             .forEach((c, k) => {
             if ((c.options.group ? c.options.group.length : 0) > max) {
                 max = c.options.group ? c.options.group.length : 0;
@@ -84,7 +84,7 @@ class CommandManager {
             }
         }
         */
-        cmd.execute(m, args);
+        cmd.execute(this.client, m, args);
     }
 }
 exports.CommandManager = CommandManager;

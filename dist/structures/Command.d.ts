@@ -8,15 +8,16 @@ interface CommandOptions<S extends SyntaxParsable[]> {
     name: string;
     syntax: string | string[] | BaseType[];
     executable: CommandExecutable<S>;
+    aliases?: string[];
     guild?: string;
     group?: string[];
     syntaxParser?: SyntaxParser;
 }
 export declare class Command<S extends SyntaxParsable[]> {
-    client: TailClient;
     options: CommandOptions<S>;
     private parser;
-    constructor(client: TailClient, options: CommandOptions<S>);
-    execute(m: Message, a: string[]): Promise<void>;
+    constructor(options: CommandOptions<S>);
+    execute(c: TailClient, m: Message, a: string[]): Promise<void>;
+    hasAlias(s: string): boolean;
 }
 export {};

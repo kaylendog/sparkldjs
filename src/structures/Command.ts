@@ -16,17 +16,16 @@ interface CommandOptions<S extends SyntaxParsable[]> {
 	syntax: string | string[] | BaseType[];
 	executable: CommandExecutable<S>;
 
+	aliases?: string[];
 	guild?: string;
 	group?: string[];
 	syntaxParser?: SyntaxParser;
 }
 export class Command<S extends SyntaxParsable[]> {
-	public client: TailClient;
 	public options: CommandOptions<S>;
 
 	private parser: SyntaxParser;
-	constructor(client: TailClient, options: CommandOptions<S>) {
-		this.client = client;
+	constructor(options: CommandOptions<S>) {
 		this.options = options;
 
 		this.parser =
@@ -34,7 +33,7 @@ export class Command<S extends SyntaxParsable[]> {
 			new SyntaxParser({ args: this.options.syntax });
 	}
 
-	public async execute(m: Message, a: string[]) {
+	public async execute(c: TailClient, m: Message, a: string[]) {
 		if (this.options.guild) {
 			if (m.guild) {
 				if (m.guild.id !== this.options.guild) {
@@ -49,7 +48,7 @@ export class Command<S extends SyntaxParsable[]> {
 		}
 
 		const beginExecute = Date.now();
-		this.client.logger.debug(
+		c.logger.debug(
 			`[cmd] [${
 				this.options.group
 					? `${this.options.group} ${this.options.name}`
@@ -58,16 +57,16 @@ export class Command<S extends SyntaxParsable[]> {
 		);
 
 		try {
-			const parsedArguments = this.parser.parse(this.client, m, a) as S;
+			const parsedArguments = this.parser.parse(c, m, a) as S;
 
-			this.client.emit("command", {
+			c.emit("command", {
 				command: this.options.group
 					? `${this.options.group} ${this.options.name}`
 					: this.options.name,
 				m,
 				timestamp: new Date(),
 			});
-			this.client.logger.log(
+			c.logger.log(
 				`[cmd] [${
 					this.options.group
 						? `${this.options.group} ${this.options.name}`
@@ -76,7 +75,7 @@ export class Command<S extends SyntaxParsable[]> {
 			);
 			await this.options.executable(m, parsedArguments);
 
-			this.client.logger.debug(
+			c.logger.debug(
 				`[cmd] [${
 					this.options.group
 						? `${this.options.group} ${this.options.name}`
@@ -86,17 +85,26 @@ export class Command<S extends SyntaxParsable[]> {
 		} catch (err) {
 			if (err instanceof SyntaxParseError) {
 				m.channel.send(err.message).catch((errx) => {
-					this.client.logger.error(err);
-					this.client.logger.error(errx);
+					c.logger.error(err);
+					c.logger.error(errx);
 				});
 			} else {
 				m.reply(
 					":negative_squared_cross_mark: Internal error. Please contact the developer.",
 				);
-				this.client.logger.error(err);
+				c.logger.error(err);
 				console.error(err);
 			}
 		}
+	}
+
+	public hasAlias(s: string) {
+		if (this.options.aliases) {
+			if (this.options.aliases.indexOf(s) !== -1) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

@@ -1,10 +1,5 @@
 import {
-	DMChannel,
-	GroupDMChannel,
-	GuildChannel,
-	Message,
-	TextChannel,
-	VoiceChannel,
+    DMChannel, GroupDMChannel, GuildChannel, Message, TextChannel, VoiceChannel
 } from "discord.js";
 
 import { TailClient } from "../client/Client";

@@ -1,6 +1,7 @@
 import { Client, Collection, Message } from "discord.js";
-
 // import { PermissionError } from "../errors/PermissionError";
+import { AnyAaaaRecord } from "dns";
+
 import { Command } from "../structures/Command";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { TailClient } from "./Client";
@@ -44,14 +45,14 @@ export class CommandManager {
 		let max = -1;
 		let key: number | undefined;
 		this.commands
-			.filter((v, k) =>
-				v.group
-					? JSON.stringify(v.group) ===
-					  JSON.stringify(a.slice(0, v.group.length))
-						? v.name === a[v.group.length] ||
-						  v.hasAlias(a[v.group.length])
+			.filter((v: Command<any>, k) =>
+				v.options.group
+					? JSON.stringify(v.options.group) ===
+					  JSON.stringify(a.slice(0, v.options.group.length))
+						? v.options.name === a[v.options.group.length] ||
+						  v.hasAlias(a[v.options.group.length])
 						: false
-					: v.name === a[0] || v.hasAlias(a[0]),
+					: v.options.name === a[0] || v.hasAlias(a[0]),
 			)
 			.forEach((c: Command<any>, k) => {
 				if ((c.options.group ? c.options.group.length : 0) > max) {
@@ -106,6 +107,6 @@ export class CommandManager {
 		}
 		*/
 
-		cmd.execute(m, args);
+		cmd.execute(this.client, m, args);
 	}
 }

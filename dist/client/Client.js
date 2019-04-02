@@ -103,7 +103,7 @@ class TailClient extends events_1.EventEmitter {
      * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
      */
     command(name, permLevel, syntax, executable) {
-        return this.commandManager.addCommand(new Command_1.Command(this, {
+        return this.commandManager.addCommand(new Command_1.Command({
             executable,
             name,
             syntax,

@@ -152,7 +152,7 @@ export class TailClient extends EventEmitter {
 		executable: CommandExecutable<Syntax>,
 	) {
 		return this.commandManager.addCommand(
-			new Command<Syntax>(this, {
+			new Command<Syntax>({
 				executable,
 				name,
 				syntax,
