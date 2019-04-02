@@ -9,6 +9,7 @@ import { MemberType } from "../types/MemberType";
 import { NumberType } from "../types/NumberType";
 import { RoleType } from "../types/RoleType";
 import { StringType } from "../types/StringType";
+import { UserType } from "../types/UserType";
 
 export interface ParserOptions {
 	args?: string | string[] | BaseType[];
@@ -81,6 +82,16 @@ export class SyntaxParser {
 						break;
 					}
 					case "user": {
+						this.syntax.push(
+							new UserType({
+								argName,
+								required,
+								rest,
+							}),
+						);
+						break;
+					}
+					case "member": {
 						this.syntax.push(
 							new MemberType({
 								argName,

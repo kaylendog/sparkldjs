@@ -1,4 +1,5 @@
-import { Guild, GuildResolvable } from "discord.js";
+import { Collection, Guild, GuildResolvable } from "discord.js";
+
 import { TailClient } from "../client/Client";
 
 interface BaseGuildConfig {
@@ -51,5 +52,9 @@ export class ConfigPlugin<S extends BaseConfig, D extends BaseDefaultConfig> {
 				? this.config.guilds[g] || this.defaults.guilds
 				: this.defaults.guilds;
 		}
+	}
+
+	public async intialise() {
+		return;
 	}
 }
