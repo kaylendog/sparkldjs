@@ -16,7 +16,9 @@ class PluginWithConfig extends Plugin_1.Plugin {
     updateConfig(config) {
         const old = this.config;
         this.config = Object.assign(this.config, config);
-        this.onConfigUpdate(this.config, old);
+        if (this.onConfigUpdate) {
+            this.onConfigUpdate(this.config, old);
+        }
     }
 }
 exports.PluginWithConfig = PluginWithConfig;

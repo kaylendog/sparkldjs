@@ -1,3 +1,4 @@
+/// <reference path="../../node_modules/discord.js/typings/index.d.ts" />
 import { Message } from "discord.js";
 import { TailClient } from "../client/Client";
 import { BaseType, BaseTypeOptions, IBaseTypeArg } from "./BaseType";
