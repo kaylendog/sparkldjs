@@ -5,7 +5,7 @@ import { PathLike } from "fs";
 
 import { Command, CommandExecutable } from "../structures/Command";
 import { BaseConfig, BaseDefaultConfig, ConfigPlugin } from "../structures/ConfigPlugin";
-import { PluginConstructor } from "../structures/Plugin";
+import { Plugin, PluginConstructor } from "../structures/Plugin";
 import { BaseType } from "../types/BaseType";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { Logger } from "../util/Logger";
@@ -133,7 +133,7 @@ export class TailClient extends EventEmitter {
 	/**
 	 * Adds a plugin to the client
 	 */
-	public addPlugin(...modules: PluginConstructor[] | Plugin[]) {
+	public addPlugin(...modules: Array<Plugin | PluginConstructor>) {
 		modules.forEach((m) => this.pluginManager.addPlugin(m));
 		return this;
 	}
