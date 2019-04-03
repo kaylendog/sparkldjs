@@ -9,6 +9,9 @@ class CommandManager {
         this.commands = new discord_js_1.Collection();
         this.guildStore = new discord_js_1.Collection();
         client.discord.on("message", (m) => {
+            if (!m.guild) {
+                return;
+            }
             let prefix = this.guildStore.get(m.guild.id);
             if (!prefix) {
                 prefix = "!";

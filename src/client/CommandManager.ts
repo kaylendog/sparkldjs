@@ -20,6 +20,9 @@ export class CommandManager {
 		this.guildStore = new Collection();
 
 		client.discord.on("message", (m: Message) => {
+			if (!m.guild) {
+				return;
+			}
 			let prefix = this.guildStore.get(m.guild.id);
 			if (!prefix) {
 				prefix = "!";
