@@ -1,6 +1,5 @@
 import { Message } from "discord.js";
 
-import { UserType } from "../../test/UserType";
 import { SparklClient } from "../client/Client";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { BaseType } from "../types/BaseType";
@@ -10,6 +9,7 @@ import { MemberType } from "../types/MemberType";
 import { NumberType } from "../types/NumberType";
 import { RoleType } from "../types/RoleType";
 import { StringType } from "../types/StringType";
+import { UserType } from "../types/UserType";
 
 export interface ParserOptions {
 	args?: string | string[] | BaseType[];
