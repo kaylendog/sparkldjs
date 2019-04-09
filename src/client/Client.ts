@@ -25,7 +25,7 @@ interface SparklClientOptions {
 }
 const DEFAULT_OPTIONS: SparklClientOptions = {
 	loggerDebugLevel: false,
-	name: "tailjs",
+	name: "sparkldjs",
 };
 
 /**
@@ -92,13 +92,16 @@ export class SparklClient extends EventEmitter {
 		} else {
 			this.logger.log(
 				"Starting... |",
-				chalk.red("t") +
-					chalk.yellow("a") +
-					chalk.green("i") +
-					chalk.cyan("l") +
-					chalk.blue("j") +
-					chalk.magenta("s"),
-				"0.1.0",
+				chalk.red("s") +
+					chalk.yellow("p") +
+					chalk.green("a") +
+					chalk.cyan("r") +
+					chalk.blue("k") +
+					chalk.magenta("l") +
+					chalk.red("d") +
+					chalk.yellow("j") +
+					chalk.green("s"),
+				"0.5.3",
 			);
 		}
 		if (token) {
@@ -221,12 +224,15 @@ export class SparklClient extends EventEmitter {
 }
 
 function logSettings(client: SparklClient) {
-	const headerString = `---------=[ ${chalk.red("t") +
-		chalk.yellow("a") +
-		chalk.green("i") +
-		chalk.cyan("l") +
-		chalk.blue("j") +
-		chalk.magenta("s")} 0.1.0 ]=---------`;
+	const headerString = `---------=[ ${chalk.red("s") +
+		chalk.yellow("p") +
+		chalk.green("a") +
+		chalk.cyan("r") +
+		chalk.blue("k") +
+		chalk.magenta("l") +
+		chalk.red("d") +
+		chalk.yellow("j") +
+		chalk.green("s")} 0.5.3 ]=---------`;
 	client.logger.debug(headerString);
 	client.logger.debug("Using the following settings:");
 	Object.keys(client.options).forEach((key) => {
@@ -239,6 +245,6 @@ function logSettings(client: SparklClient) {
 		);
 	});
 	client.logger.debug(
-		"-".repeat(`---------=[ tailjs 0.1.0 ]=---------`.length),
+		"-".repeat(`---------=[ sparkldjs 0.5.3 ]=---------`.length),
 	);
 }
