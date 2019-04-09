@@ -1,13 +1,13 @@
-import { Client, Collection, Message } from "discord.js";
+import { Collection, Message } from "discord.js";
 import { isUndefined } from "util";
 
 import { PermissionError } from "../errors/PermissionError";
 import { Command } from "../structures/Command";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
-import { TailClient } from "./Client";
+import { SparklClient } from "./Client";
 
 const verifyPermission = async (
-	c: TailClient,
+	c: SparklClient,
 	m: Message,
 	cmd: Command<any>,
 ) => {
@@ -57,11 +57,11 @@ const verifyPermission = async (
 
 const COMMAND_INCREMENT = 0;
 export class CommandManager {
-	public client: TailClient;
+	public client: SparklClient;
 
 	private commands: Collection<number, Command<any>>;
 
-	constructor(client: TailClient) {
+	constructor(client: SparklClient) {
 		this.client = client;
 
 		this.commands = new Collection();

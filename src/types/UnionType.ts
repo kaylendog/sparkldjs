@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { BaseType, BaseTypeOptions, IBaseTypeArg } from "./BaseType";
 
@@ -29,7 +29,7 @@ export class UnionType extends BaseType {
 			);
 		}
 	}
-	public match(client: TailClient, message: Message, arg: IBaseTypeArg) {
+	public match(client: SparklClient, message: Message, arg: IBaseTypeArg) {
 		const allHaveFailed = false;
 		let totalFailed = 0;
 		const values: any = [];

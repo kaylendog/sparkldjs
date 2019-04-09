@@ -8,7 +8,7 @@ import { Plugin, PluginConstructor } from "../structures/Plugin";
 import { BaseType } from "../types/BaseType";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { Logger } from "../util/Logger";
-interface TailClientOptions {
+interface SparklClientOptions {
     token?: string;
     name?: string;
     loggerDebugLevel?: false | "quiet" | "verbose";
@@ -19,21 +19,21 @@ interface TailClientOptions {
 /**
  * The main client used to interact with the API.
  */
-export declare class TailClient extends EventEmitter {
-    options: TailClientOptions;
+export declare class SparklClient extends EventEmitter {
+    options: SparklClientOptions;
     logger: Logger;
     config: ConfigPlugin<BaseConfig<BaseGuildConfig>, BaseGuildConfig, BaseDefaultConfig<BaseGuildConfig>>;
     discord: Client;
     private pluginManager;
     private commandManager;
     /**
-     * @param {TailClientOptions} [options] Options for the client
+     * @param {SparklClientOptions} [options] Options for the client
      */
-    constructor(options?: TailClientOptions);
+    constructor(options?: SparklClientOptions);
     /**
      * Triggers the login process with the Discord API. Use this to start your bot.
      * @param {string} [token] - The bot token to use.
-     * @returns {Promise<TailClient>}
+     * @returns {Promise<SparklClient>}
      * @example
      * client.login("token here").then(() => {
      * 		console.log("Logged in!");

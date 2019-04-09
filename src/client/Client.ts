@@ -15,7 +15,7 @@ import { Logger } from "../util/Logger";
 import { CommandManager } from "./CommandManager";
 import { PluginManager } from "./PluginManager";
 
-interface TailClientOptions {
+interface SparklClientOptions {
 	token?: string;
 	name?: string;
 	loggerDebugLevel?: false | "quiet" | "verbose";
@@ -23,7 +23,7 @@ interface TailClientOptions {
 	permissionOverrides?: string[];
 	syntaxErrorHandler?: (m: Message, err: SyntaxParseError) => any;
 }
-const DEFAULT_OPTIONS: TailClientOptions = {
+const DEFAULT_OPTIONS: SparklClientOptions = {
 	loggerDebugLevel: false,
 	name: "tailjs",
 };
@@ -31,8 +31,8 @@ const DEFAULT_OPTIONS: TailClientOptions = {
 /**
  * The main client used to interact with the API.
  */
-export class TailClient extends EventEmitter {
-	public options: TailClientOptions;
+export class SparklClient extends EventEmitter {
+	public options: SparklClientOptions;
 	public logger: Logger;
 
 	public config: ConfigPlugin<
@@ -46,9 +46,9 @@ export class TailClient extends EventEmitter {
 	private pluginManager: PluginManager;
 	private commandManager: CommandManager;
 	/**
-	 * @param {TailClientOptions} [options] Options for the client
+	 * @param {SparklClientOptions} [options] Options for the client
 	 */
-	constructor(options?: TailClientOptions) {
+	constructor(options?: SparklClientOptions) {
 		super();
 		this.options = Object.assign(DEFAULT_OPTIONS, options);
 
@@ -80,7 +80,7 @@ export class TailClient extends EventEmitter {
 	/**
 	 * Triggers the login process with the Discord API. Use this to start your bot.
 	 * @param {string} [token] - The bot token to use.
-	 * @returns {Promise<TailClient>}
+	 * @returns {Promise<SparklClient>}
 	 * @example
 	 * client.login("token here").then(() => {
 	 * 		console.log("Logged in!");
@@ -220,7 +220,7 @@ export class TailClient extends EventEmitter {
 	}
 }
 
-function logSettings(client: TailClient) {
+function logSettings(client: SparklClient) {
 	const headerString = `---------=[ ${chalk.red("t") +
 		chalk.yellow("a") +
 		chalk.green("i") +

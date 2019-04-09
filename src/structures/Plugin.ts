@@ -1,11 +1,11 @@
 import { Client } from "discord.js";
-import { TailClient } from "../client/Client";
-import { PluginManager } from "../client/PluginManager";
+
+import { SparklClient } from "../client/Client";
 import { Logger } from "../util/Logger";
 
 export declare interface Plugin {
 	pluginName: string;
-	client: TailClient;
+	client: SparklClient;
 	start(): any;
 
 	sendMessage(dest: string, type: string, ...data: any[]): any;
@@ -13,15 +13,15 @@ export declare interface Plugin {
 	onReceiveMessage(type: string, ...data: any[]): any;
 }
 
-export type PluginConstructor = new (c: TailClient) => Plugin;
+export type PluginConstructor = new (c: SparklClient) => Plugin;
 
 export class Plugin {
 	public static pluginName: string;
-	public client: TailClient;
+	public client: SparklClient;
 	public logger: Logger;
 	public discord: Client;
 
-	constructor(client: TailClient) {
+	constructor(client: SparklClient) {
 		this.client = client;
 		this.logger = this.client.logger;
 		this.discord = this.client.discord;
@@ -30,7 +30,7 @@ export class Plugin {
 }
 
 export function plugin(name: string, onStart: () => any) {
-	return (client: TailClient) => {
+	return (client: SparklClient) => {
 		const m = new Plugin(client);
 		m.pluginName = name;
 		m.start = onStart;

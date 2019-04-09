@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { BaseType, BaseTypeOptions, IBaseTypeArg } from "./BaseType";
 export interface IStringTypeOptions extends BaseTypeOptions {
     maxLength?: number;
@@ -8,5 +8,5 @@ export interface IStringTypeOptions extends BaseTypeOptions {
 export declare class StringType extends BaseType {
     options: IStringTypeOptions;
     constructor(typeOptions: IStringTypeOptions);
-    match(client: TailClient, message: Message, arg: IBaseTypeArg): string | false;
+    match(client: SparklClient, message: Message, arg: IBaseTypeArg): string | false;
 }

@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { BaseType, BaseTypeOptions, IBaseTypeArg } from "./BaseType";
 
@@ -15,7 +15,7 @@ export class UserType extends BaseType {
 			typeName: "user",
 		};
 	}
-	public match(client: TailClient, message: Message, arg: IBaseTypeArg) {
+	public match(client: SparklClient, message: Message, arg: IBaseTypeArg) {
 		let snowflake = "";
 		let tag = "";
 

@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { BaseType, BaseTypeOptions, IBaseTypeArg } from "./BaseType";
 interface UnionTypeOptions extends BaseTypeOptions {
     types: BaseType[];
@@ -10,7 +10,7 @@ interface UnionTypeOptions extends BaseTypeOptions {
 export declare class UnionType extends BaseType {
     options: UnionTypeOptions;
     constructor(opts: UnionTypeOptions);
-    match(client: TailClient, message: Message, arg: IBaseTypeArg): void;
+    match(client: SparklClient, message: Message, arg: IBaseTypeArg): void;
     readonly string: string;
 }
 export {};

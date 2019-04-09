@@ -1,11 +1,11 @@
 import chalk from "chalk";
 import moment from "moment";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 
 export class Logger {
-	private client: TailClient;
-	constructor(client: TailClient) {
+	private client: SparklClient;
+	constructor(client: SparklClient) {
 		this.client = client;
 	}
 

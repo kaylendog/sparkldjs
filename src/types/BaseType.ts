@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 
 export interface BaseTypeOptions {
 	typeName?: string;
@@ -30,7 +30,7 @@ export class BaseType {
 		return this;
 	}
 
-	public match(client: TailClient, message: Message, arg: IBaseTypeArg) {
+	public match(client: SparklClient, message: Message, arg: IBaseTypeArg) {
 		throw Error(`Cannot parse base type at position ${arg.index}`);
 	}
 

@@ -1,10 +1,10 @@
 import { Command } from "../structures/Command";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
-import { TailClient } from "./Client";
+import { SparklClient } from "./Client";
 export declare class CommandManager {
-    client: TailClient;
+    client: SparklClient;
     private commands;
-    constructor(client: TailClient);
+    constructor(client: SparklClient);
     addCommand<S extends SyntaxParsable[]>(command: Command<S>): void;
     private execute;
 }

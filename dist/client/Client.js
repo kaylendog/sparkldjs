@@ -18,9 +18,9 @@ const DEFAULT_OPTIONS = {
 /**
  * The main client used to interact with the API.
  */
-class TailClient extends events_1.EventEmitter {
+class SparklClient extends events_1.EventEmitter {
     /**
-     * @param {TailClientOptions} [options] Options for the client
+     * @param {SparklClientOptions} [options] Options for the client
      */
     constructor(options) {
         super();
@@ -45,7 +45,7 @@ class TailClient extends events_1.EventEmitter {
     /**
      * Triggers the login process with the Discord API. Use this to start your bot.
      * @param {string} [token] - The bot token to use.
-     * @returns {Promise<TailClient>}
+     * @returns {Promise<SparklClient>}
      * @example
      * client.login("token here").then(() => {
      * 		console.log("Logged in!");
@@ -149,7 +149,7 @@ class TailClient extends events_1.EventEmitter {
         return this;
     }
 }
-exports.TailClient = TailClient;
+exports.SparklClient = SparklClient;
 function logSettings(client) {
     const headerString = `---------=[ ${chalk_1.default.red("t") +
         chalk_1.default.yellow("a") +

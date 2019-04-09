@@ -1,4 +1,4 @@
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { Plugin } from "./Plugin";
 
 export declare interface PluginWithConfig<Config extends {}> extends Plugin {
@@ -11,7 +11,7 @@ export declare interface PluginWithConfig<Config extends {}> extends Plugin {
 export class PluginWithConfig<Config extends {}> extends Plugin {
 	public config: Readonly<Config>;
 
-	constructor(client: TailClient) {
+	constructor(client: SparklClient) {
 		super(client);
 		this.config = {} as Config;
 	}

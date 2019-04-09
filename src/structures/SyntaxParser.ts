@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { BaseType } from "../types/BaseType";
 import { ChannelType } from "../types/ChannelType";
@@ -134,7 +134,7 @@ export class SyntaxParser {
 		}
 	}
 
-	public parse(client: TailClient, message: Message, args?: string[]) {
+	public parse(client: SparklClient, message: Message, args?: string[]) {
 		const parsedArgs: any[] = [];
 		if (!args) {
 			return [];

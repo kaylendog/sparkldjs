@@ -1,4 +1,4 @@
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { Plugin } from "./Plugin";
 export declare interface PluginWithConfig<Config extends {}> extends Plugin {
     onConfigUpdate(config?: Config, oldConfig?: Config): any;
@@ -8,7 +8,7 @@ export declare interface PluginWithConfig<Config extends {}> extends Plugin {
  */
 export declare class PluginWithConfig<Config extends {}> extends Plugin {
     config: Readonly<Config>;
-    constructor(client: TailClient);
+    constructor(client: SparklClient);
     /**
      * Updates the Plugin's config.
      * @param {Config} config - The new config to patch into the Plugin

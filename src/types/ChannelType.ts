@@ -1,8 +1,6 @@
-import {
-    DMChannel, GroupDMChannel, GuildChannel, Message, TextChannel, VoiceChannel
-} from "discord.js";
+import { GuildChannel, Message, TextChannel, VoiceChannel } from "discord.js";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { BaseType, BaseTypeOptions, IBaseTypeArg } from "./BaseType";
 
@@ -17,7 +15,7 @@ export class ChannelType extends BaseType {
 			typeName: "channel",
 		};
 	}
-	public match(client: TailClient, message: Message, arg: IBaseTypeArg) {
+	public match(client: SparklClient, message: Message, arg: IBaseTypeArg) {
 		let snowflake = "";
 		const name = "";
 		if (arg.value.startsWith("<")) {

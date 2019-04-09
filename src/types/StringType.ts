@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 import * as util from "util";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { BaseType, BaseTypeOptions, IBaseTypeArg } from "./BaseType";
 
 export interface IStringTypeOptions extends BaseTypeOptions {
@@ -23,7 +23,7 @@ export class StringType extends BaseType {
 		this.options.maxLength = typeOptions.maxLength;
 		this.options.minLength = typeOptions.minLength;
 	}
-	public match(client: TailClient, message: Message, arg: IBaseTypeArg) {
+	public match(client: SparklClient, message: Message, arg: IBaseTypeArg) {
 		const str = util.inspect(arg.value).replace(/[']/g, "");
 		if (this.options.maxLength) {
 			if (str.length > this.options.maxLength) {

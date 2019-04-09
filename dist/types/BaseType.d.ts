@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 export interface BaseTypeOptions {
     typeName?: string;
     argName: string;
@@ -15,6 +15,6 @@ export declare class BaseType {
     constructor(options: BaseTypeOptions);
     optional(): this;
     rest(): this;
-    match(client: TailClient, message: Message, arg: IBaseTypeArg): void;
+    match(client: SparklClient, message: Message, arg: IBaseTypeArg): void;
     readonly string: string;
 }

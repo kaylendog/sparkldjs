@@ -5,7 +5,7 @@ import { NumberType } from "./types/NumberType";
 import { RoleType } from "./types/RoleType";
 import { StringType } from "./types/StringType";
 import { UserType } from "./types/UserType";
-export { TailClient } from "./client/Client";
+export { SparklClient } from "./client/Client";
 export { Plugin } from "./structures/Plugin";
 export { PluginWithConfig } from "./structures/PluginWithConfig";
 export { Command } from "./structures/Command";

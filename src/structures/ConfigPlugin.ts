@@ -1,6 +1,6 @@
-import { Collection, Guild, GuildResolvable } from "discord.js";
+import { Guild, GuildResolvable } from "discord.js";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 
 export interface BaseGuildPermissions {
 	commandPermissionOverrides?: {
@@ -44,19 +44,19 @@ export type ConfigPluginConstructor<
 	S extends BaseConfig<G>,
 	G extends BaseGuildConfig,
 	D extends BaseDefaultConfig<G>
-> = new (c: TailClient, conf: S, defaults: D) => ConfigPlugin<S, G, D>;
+> = new (c: SparklClient, conf: S, defaults: D) => ConfigPlugin<S, G, D>;
 
 export class ConfigPlugin<
 	S extends BaseConfig<G>,
 	G extends BaseGuildConfig,
 	D extends BaseDefaultConfig<G>
 > {
-	public client: TailClient;
+	public client: SparklClient;
 
 	protected config: S;
 	protected defaults: D;
 
-	constructor(client: TailClient, config: S, defaults: D) {
+	constructor(client: SparklClient, config: S, defaults: D) {
 		this.client = client;
 		this.config = config;
 		this.defaults = defaults;

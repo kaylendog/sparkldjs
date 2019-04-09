@@ -1,14 +1,14 @@
 import { Collection } from "discord.js";
 
 import { Plugin, PluginConstructor } from "../structures/Plugin";
-import { TailClient } from "./Client";
+import { SparklClient } from "./Client";
 
 export class PluginManager {
-	public client: TailClient;
+	public client: SparklClient;
 
 	private plugins: Collection<string, Plugin>;
 	private hasStarted: boolean;
-	constructor(client: TailClient) {
+	constructor(client: SparklClient) {
 		this.client = client;
 		this.plugins = new Collection();
 

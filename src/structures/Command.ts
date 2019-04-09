@@ -1,13 +1,13 @@
 import { Message } from "discord.js";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { BaseType } from "../types/BaseType";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { SyntaxParser } from "./SyntaxParser";
 
 export type CommandExecutable<S extends SyntaxParsable[]> = (
-	c: TailClient,
+	c: SparklClient,
 	m: Message,
 	a: S,
 ) => any;
@@ -35,7 +35,7 @@ export class Command<S extends SyntaxParsable[]> {
 			new SyntaxParser({ args: this.options.syntax });
 	}
 
-	public async execute(c: TailClient, m: Message, a: string[]) {
+	public async execute(c: SparklClient, m: Message, a: string[]) {
 		if (this.options.guild) {
 			if (m.guild) {
 				if (m.guild.id !== this.options.guild) {

@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { BaseType, BaseTypeOptions, IBaseTypeArg } from "./BaseType";
 
@@ -15,7 +15,7 @@ export class DurationType extends BaseType {
 			typeName: "duration",
 		};
 	}
-	public match(client: TailClient, message: Message, arg: IBaseTypeArg) {
+	public match(client: SparklClient, message: Message, arg: IBaseTypeArg) {
 		let multiplier: number;
 
 		const unit = arg.value.slice(-1);

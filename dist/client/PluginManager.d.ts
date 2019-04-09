@@ -1,10 +1,10 @@
 import { Plugin, PluginConstructor } from "../structures/Plugin";
-import { TailClient } from "./Client";
+import { SparklClient } from "./Client";
 export declare class PluginManager {
-    client: TailClient;
+    client: SparklClient;
     private plugins;
     private hasStarted;
-    constructor(client: TailClient);
+    constructor(client: SparklClient);
     /**
      * Adds a module to the client
      * @param {Plugin | PluginConstructor} module

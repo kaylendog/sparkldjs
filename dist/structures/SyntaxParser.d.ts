@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { TailClient } from "../client/Client";
+import { SparklClient } from "../client/Client";
 import { BaseType } from "../types/BaseType";
 export interface ParserOptions {
     args?: string | string[] | BaseType[];
@@ -17,5 +17,5 @@ export declare class SyntaxParser {
     private options;
     private syntax;
     constructor(options: ParserOptions);
-    parse(client: TailClient, message: Message, args?: string[]): any[];
+    parse(client: SparklClient, message: Message, args?: string[]): any[];
 }
