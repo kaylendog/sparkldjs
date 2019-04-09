@@ -2,39 +2,59 @@ import { Collection, Guild, GuildResolvable } from "discord.js";
 
 import { TailClient } from "../client/Client";
 
-interface BaseGuildConfig {
-	prefix: string;
-}
-
-export interface BaseConfig {
-	guilds?: {
-		[x: string]: BaseGuildConfig;
+export interface BaseGuildPermissions {
+	commandPermissionOverrides?: {
+		[x: string]: number;
+	};
+	users?: {
+		[x: string]: number;
+	};
+	roles?: {
+		[x: string]: number;
 	};
 }
 
-export interface BaseDefaultConfig {
-	guilds: BaseGuildConfig;
+export interface BaseGuildConfig {
+	prefix: string;
+	permissions: BaseGuildPermissions;
+}
+
+export interface BaseConfig<G extends BaseGuildConfig> {
+	guilds: {
+		[x: string]: G;
+	};
+	commandPermmisions: {
+		[x: string]: number;
+	};
+}
+
+export interface BaseDefaultConfig<G> {
+	guilds: G;
 }
 
 export declare interface ConfigPlugin<
-	S extends BaseConfig,
-	D extends BaseDefaultConfig
+	S extends BaseConfig<G>,
+	G extends BaseGuildConfig,
+	D extends BaseDefaultConfig<G>
 > {
-	fetchGuildConfig(
-		id: GuildResolvable,
-	): BaseGuildConfig | Promise<BaseGuildConfig>;
+	fetchGuildConfig(id: GuildResolvable): G | Promise<G>;
 }
 
 export type ConfigPluginConstructor<
-	S extends BaseConfig,
-	D extends BaseDefaultConfig
-> = new (c: TailClient, conf: S, defaults: D) => ConfigPlugin<S, D>;
+	S extends BaseConfig<G>,
+	G extends BaseGuildConfig,
+	D extends BaseDefaultConfig<G>
+> = new (c: TailClient, conf: S, defaults: D) => ConfigPlugin<S, G, D>;
 
-export class ConfigPlugin<S extends BaseConfig, D extends BaseDefaultConfig> {
+export class ConfigPlugin<
+	S extends BaseConfig<G>,
+	G extends BaseGuildConfig,
+	D extends BaseDefaultConfig<G>
+> {
 	public client: TailClient;
 
-	private config: S;
-	private defaults: D;
+	protected config: S;
+	protected defaults: D;
 
 	constructor(client: TailClient, config: S, defaults: D) {
 		this.client = client;
@@ -43,15 +63,10 @@ export class ConfigPlugin<S extends BaseConfig, D extends BaseDefaultConfig> {
 	}
 
 	public fetchGuildConfig(g: GuildResolvable) {
-		if (g instanceof Guild) {
-			return this.config.guilds
-				? this.config.guilds[g.id] || this.defaults.guilds
-				: this.defaults.guilds;
-		} else {
-			return this.config.guilds
-				? this.config.guilds[g] || this.defaults.guilds
-				: this.defaults.guilds;
-		}
+		return this.config.guilds
+			? this.config.guilds[g instanceof Guild ? g.id : g] ||
+					this.defaults.guilds
+			: this.defaults.guilds;
 	}
 
 	public async intialise() {

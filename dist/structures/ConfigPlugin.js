@@ -8,16 +8,10 @@ class ConfigPlugin {
         this.defaults = defaults;
     }
     fetchGuildConfig(g) {
-        if (g instanceof discord_js_1.Guild) {
-            return this.config.guilds
-                ? this.config.guilds[g.id] || this.defaults.guilds
-                : this.defaults.guilds;
-        }
-        else {
-            return this.config.guilds
-                ? this.config.guilds[g] || this.defaults.guilds
-                : this.defaults.guilds;
-        }
+        return this.config.guilds
+            ? this.config.guilds[g instanceof discord_js_1.Guild ? g.id : g] ||
+                this.defaults.guilds
+            : this.defaults.guilds;
     }
     async intialise() {
         return;

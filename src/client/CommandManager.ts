@@ -1,32 +1,77 @@
 import { Client, Collection, Message } from "discord.js";
-// import { PermissionError } from "../errors/PermissionError";
-import { AnyAaaaRecord } from "dns";
 import { isUndefined } from "util";
 
+import { PermissionError } from "../errors/PermissionError";
 import { Command } from "../structures/Command";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { TailClient } from "./Client";
+
+const verifyPermission = async (
+	c: TailClient,
+	m: Message,
+	cmd: Command<any>,
+) => {
+	const config = await c.config.fetchGuildConfig(m.guild);
+	let permlevel = cmd.options.permissionLevel;
+	let highestPermission = 0;
+
+	if (
+		config.permissions.commandPermissionOverrides &&
+		Object.keys(config.permissions.commandPermissionOverrides).indexOf(
+			cmd.options.name,
+		) !== -1
+	) {
+		permlevel =
+			config.permissions.commandPermissionOverrides[cmd.options.name];
+	}
+
+	highestPermission =
+		config.permissions.users &&
+		Object.keys(config.permissions.users).indexOf(m.author.id) !== -1 &&
+		config.permissions.users[m.author.id] > highestPermission
+			? config.permissions.users[m.author.id]
+			: highestPermission;
+
+	if (config.permissions.roles) {
+		Object.keys(config.permissions.roles).map((v) => {
+			const rolePerm = (config.permissions.roles as {
+				[x: string]: number;
+			})[v];
+			if (m.member.roles.get(v) && rolePerm) {
+				highestPermission =
+					rolePerm > highestPermission ? rolePerm : highestPermission;
+			}
+		});
+	}
+
+	if (highestPermission >= permlevel) {
+		return true;
+	} else {
+		throw new PermissionError({
+			message: "NOT_ENOUGH_PERMISSION",
+			receivedPermission: highestPermission,
+			requiredPermission: permlevel,
+		});
+	}
+};
 
 let COMMAND_INCREMENT = 0;
 export class CommandManager {
 	public client: TailClient;
 
 	private commands: Collection<number, any>;
-	private guildStore: Collection<string, string>;
+
 	constructor(client: TailClient) {
 		this.client = client;
 
 		this.commands = new Collection();
-		this.guildStore = new Collection();
 
-		client.discord.on("message", (m: Message) => {
+		this.client.discord.on("message", async (m: Message) => {
 			if (!m.guild) {
 				return;
 			}
-			let prefix = this.guildStore.get(m.guild.id);
-			if (!prefix) {
-				prefix = "!";
-			}
+			const prefix = await this.client.config.fetchGuildConfig(m.guild)
+				.prefix;
 
 			if (m.cleanContent.startsWith(prefix)) {
 				const args = m.content
@@ -79,29 +124,12 @@ export class CommandManager {
 			cmd.options.group ? cmd.options.group.length + 1 : 1,
 		);
 
-		/*
 		try {
-			verifyPermission(
-				this.client,
-				m,
-				cmd.permission,
-				await(this.client.options.storageStrategy as Strategy).getGuild(
-					this.client,
-					m.guild.id,
-				),
-			);
+			verifyPermission(this.client, m, cmd);
 		} catch (err) {
 			if (err instanceof PermissionError) {
 				return m.channel.send(
-					`:negative_squared_cross_mark: ${
-						this.client.options.commands
-							? this.client.options.commands.permissionErrors
-								? this.client.options.commands.permissionErrors.default(
-										err,
-								  )
-								: "Oops! Looks like you don't have the required permission to run this command."
-							: "Oops! Looks like you don't have the required permission to run this command."
-					}`,
+					":negative_squared_cross_mark: Oops! Looks like you don't have the required permission to run this command.",
 				);
 			} else {
 				console.error(err);
@@ -110,7 +138,6 @@ export class CommandManager {
 				);
 			}
 		}
-		*/
 
 		cmd.execute(this.client, m, args);
 	}

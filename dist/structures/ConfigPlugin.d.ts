@@ -1,25 +1,39 @@
 import { GuildResolvable } from "discord.js";
 import { TailClient } from "../client/Client";
-interface BaseGuildConfig {
-    prefix: string;
-}
-export interface BaseConfig {
-    guilds?: {
-        [x: string]: BaseGuildConfig;
+export interface BaseGuildPermissions {
+    commandPermissionOverrides?: {
+        [x: string]: number;
+    };
+    users?: {
+        [x: string]: number;
+    };
+    roles?: {
+        [x: string]: number;
     };
 }
-export interface BaseDefaultConfig {
-    guilds: BaseGuildConfig;
+export interface BaseGuildConfig {
+    prefix: string;
+    permissions: BaseGuildPermissions;
 }
-export declare interface ConfigPlugin<S extends BaseConfig, D extends BaseDefaultConfig> {
-    fetchGuildConfig(id: GuildResolvable): BaseGuildConfig | Promise<BaseGuildConfig>;
+export interface BaseConfig<G extends BaseGuildConfig> {
+    guilds: {
+        [x: string]: G;
+    };
+    commandPermmisions: {
+        [x: string]: number;
+    };
 }
-export declare type ConfigPluginConstructor<S extends BaseConfig, D extends BaseDefaultConfig> = new (c: TailClient, conf: S, defaults: D) => ConfigPlugin<S, D>;
-export declare class ConfigPlugin<S extends BaseConfig, D extends BaseDefaultConfig> {
+export interface BaseDefaultConfig<G> {
+    guilds: G;
+}
+export declare interface ConfigPlugin<S extends BaseConfig<G>, G extends BaseGuildConfig, D extends BaseDefaultConfig<G>> {
+    fetchGuildConfig(id: GuildResolvable): G | Promise<G>;
+}
+export declare type ConfigPluginConstructor<S extends BaseConfig<G>, G extends BaseGuildConfig, D extends BaseDefaultConfig<G>> = new (c: TailClient, conf: S, defaults: D) => ConfigPlugin<S, G, D>;
+export declare class ConfigPlugin<S extends BaseConfig<G>, G extends BaseGuildConfig, D extends BaseDefaultConfig<G>> {
     client: TailClient;
-    private config;
-    private defaults;
+    protected config: S;
+    protected defaults: D;
     constructor(client: TailClient, config: S, defaults: D);
     intialise(): Promise<void>;
 }
-export {};

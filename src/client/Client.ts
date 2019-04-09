@@ -3,9 +3,11 @@ import { Client, Message } from "discord.js";
 import { EventEmitter } from "events";
 import { PathLike } from "fs";
 
-import { SyntaxParseError, SyntaxParseErrorType } from "../errors/SyntaxParseError";
+import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { Command, CommandExecutable } from "../structures/Command";
-import { BaseConfig, BaseDefaultConfig, ConfigPlugin } from "../structures/ConfigPlugin";
+import {
+    BaseConfig, BaseDefaultConfig, BaseGuildConfig, ConfigPlugin
+} from "../structures/ConfigPlugin";
 import { Plugin, PluginConstructor } from "../structures/Plugin";
 import { BaseType } from "../types/BaseType";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
@@ -33,7 +35,11 @@ export class TailClient extends EventEmitter {
 	public options: TailClientOptions;
 	public logger: Logger;
 
-	public config?: ConfigPlugin<BaseConfig, BaseDefaultConfig>;
+	public config: ConfigPlugin<
+		BaseConfig<BaseGuildConfig>,
+		BaseGuildConfig,
+		BaseDefaultConfig<BaseGuildConfig>
+	>;
 
 	public discord: Client;
 
@@ -53,6 +59,20 @@ export class TailClient extends EventEmitter {
 		this.discord = new Client();
 		this.pluginManager = new PluginManager(this);
 		this.commandManager = new CommandManager(this);
+
+		this.config = new ConfigPlugin(
+			this,
+			{
+				commandPermmisions: {},
+				guilds: {},
+			},
+			{
+				guilds: {
+					permissions: {},
+					prefix: "!",
+				},
+			},
+		);
 
 		this.discord.on("debug", (m) => this.logger.debug(m, "verbose"));
 	}
@@ -143,13 +163,13 @@ export class TailClient extends EventEmitter {
 	/**
 	 * Creates and adds a command to the client
 	 * @param {string} name
-	 * @param {number} permLevel
+	 * @param {number} permissionLevel
 	 * @param {string|string[]|BaseType[]} syntax - Syntax to use for the command
 	 * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
 	 */
 	public command<Syntax extends SyntaxParsable[]>(
 		name: string,
-		permLevel: number,
+		permissionLevel: number,
 		syntax: string | string[] | BaseType[],
 		executable: CommandExecutable<Syntax>,
 	) {
@@ -157,6 +177,7 @@ export class TailClient extends EventEmitter {
 			new Command<Syntax>({
 				executable,
 				name,
+				permissionLevel,
 				syntax,
 			}),
 		);
@@ -184,9 +205,11 @@ export class TailClient extends EventEmitter {
 	 * Adds a config plugin to the client
 	 * @param {ConfigPlugin|ConfigPluginConstructor} config - Config plugin to use
 	 */
-	public useConfigPlugin<S extends BaseConfig, D extends BaseDefaultConfig>(
-		config: (c: this) => ConfigPlugin<S, D>,
-	) {
+	public useConfigPlugin<
+		S extends BaseConfig<G>,
+		G extends BaseGuildConfig,
+		D extends BaseDefaultConfig<G>
+	>(config: (c: this) => ConfigPlugin<S, G, D>) {
 		this.config = config(this);
 		return this;
 	}

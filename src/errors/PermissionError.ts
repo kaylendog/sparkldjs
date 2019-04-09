@@ -1,17 +1,17 @@
 import { RoleResolvable } from "discord.js";
 
 export class PermissionError extends Error {
-	public recievedPermission: number;
+	public receivedPermission: number;
 	public requiredPermission: number | RoleResolvable[];
 	public message: string;
 
 	constructor(options: {
-		recievedPermission: number;
+		receivedPermission: number;
 		requiredPermission: number | RoleResolvable[];
 		message: string;
 	}) {
 		super();
-		this.recievedPermission = options.recievedPermission;
+		this.receivedPermission = options.receivedPermission;
 		this.requiredPermission = options.requiredPermission;
 		this.message = options.message;
 	}

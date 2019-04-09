@@ -7,6 +7,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const discord_js_1 = require("discord.js");
 const events_1 = require("events");
 const Command_1 = require("../structures/Command");
+const ConfigPlugin_1 = require("../structures/ConfigPlugin");
 const Logger_1 = require("../util/Logger");
 const CommandManager_1 = require("./CommandManager");
 const PluginManager_1 = require("./PluginManager");
@@ -30,6 +31,15 @@ class TailClient extends events_1.EventEmitter {
         this.discord = new discord_js_1.Client();
         this.pluginManager = new PluginManager_1.PluginManager(this);
         this.commandManager = new CommandManager_1.CommandManager(this);
+        this.config = new ConfigPlugin_1.ConfigPlugin(this, {
+            commandPermmisions: {},
+            guilds: {},
+        }, {
+            guilds: {
+                permissions: {},
+                prefix: "!",
+            },
+        });
         this.discord.on("debug", (m) => this.logger.debug(m, "verbose"));
     }
     /**
@@ -98,14 +108,15 @@ class TailClient extends events_1.EventEmitter {
     /**
      * Creates and adds a command to the client
      * @param {string} name
-     * @param {number} permLevel
+     * @param {number} permissionLevel
      * @param {string|string[]|BaseType[]} syntax - Syntax to use for the command
      * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
      */
-    command(name, permLevel, syntax, executable) {
+    command(name, permissionLevel, syntax, executable) {
         return this.commandManager.addCommand(new Command_1.Command({
             executable,
             name,
+            permissionLevel,
             syntax,
         }));
     }

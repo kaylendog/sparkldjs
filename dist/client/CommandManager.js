@@ -2,20 +2,53 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const util_1 = require("util");
+const PermissionError_1 = require("../errors/PermissionError");
+const verifyPermission = async (c, m, cmd) => {
+    const config = await c.config.fetchGuildConfig(m.guild);
+    let permlevel = cmd.options.permissionLevel;
+    let highestPermission = 0;
+    if (config.permissions.commandPermissionOverrides &&
+        Object.keys(config.permissions.commandPermissionOverrides).indexOf(cmd.options.name) !== -1) {
+        permlevel =
+            config.permissions.commandPermissionOverrides[cmd.options.name];
+    }
+    highestPermission =
+        config.permissions.users &&
+            Object.keys(config.permissions.users).indexOf(m.author.id) !== -1 &&
+            config.permissions.users[m.author.id] > highestPermission
+            ? config.permissions.users[m.author.id]
+            : highestPermission;
+    if (config.permissions.roles) {
+        Object.keys(config.permissions.roles).map((v) => {
+            const rolePerm = config.permissions.roles[v];
+            if (m.member.roles.get(v) && rolePerm) {
+                highestPermission =
+                    rolePerm > highestPermission ? rolePerm : highestPermission;
+            }
+        });
+    }
+    if (highestPermission >= permlevel) {
+        return true;
+    }
+    else {
+        throw new PermissionError_1.PermissionError({
+            message: "NOT_ENOUGH_PERMISSION",
+            receivedPermission: highestPermission,
+            requiredPermission: permlevel,
+        });
+    }
+};
 let COMMAND_INCREMENT = 0;
 class CommandManager {
     constructor(client) {
         this.client = client;
         this.commands = new discord_js_1.Collection();
-        this.guildStore = new discord_js_1.Collection();
-        client.discord.on("message", (m) => {
+        this.client.discord.on("message", async (m) => {
             if (!m.guild) {
                 return;
             }
-            let prefix = this.guildStore.get(m.guild.id);
-            if (!prefix) {
-                prefix = "!";
-            }
+            const prefix = await this.client.config.fetchGuildConfig(m.guild)
+                .prefix;
             if (m.cleanContent.startsWith(prefix)) {
                 const args = m.content
                     .slice(prefix.length)
@@ -56,38 +89,18 @@ class CommandManager {
             return;
         }
         const args = a.slice(cmd.options.group ? cmd.options.group.length + 1 : 1);
-        /*
         try {
-            verifyPermission(
-                this.client,
-                m,
-                cmd.permission,
-                await(this.client.options.storageStrategy as Strategy).getGuild(
-                    this.client,
-                    m.guild.id,
-                ),
-            );
-        } catch (err) {
-            if (err instanceof PermissionError) {
-                return m.channel.send(
-                    `:negative_squared_cross_mark: ${
-                        this.client.options.commands
-                            ? this.client.options.commands.permissionErrors
-                                ? this.client.options.commands.permissionErrors.default(
-                                        err,
-                                  )
-                                : "Oops! Looks like you don't have the required permission to run this command."
-                            : "Oops! Looks like you don't have the required permission to run this command."
-                    }`,
-                );
-            } else {
+            verifyPermission(this.client, m, cmd);
+        }
+        catch (err) {
+            if (err instanceof PermissionError_1.PermissionError) {
+                return m.channel.send(":negative_squared_cross_mark: Oops! Looks like you don't have the required permission to run this command.");
+            }
+            else {
                 console.error(err);
-                return m.channel.send(
-                    ":negative_squared_cross_mark: Internal Error. Please contact the developer.",
-                );
+                return m.channel.send(":negative_squared_cross_mark: Internal Error. Please contact the developer.");
             }
         }
-        */
         cmd.execute(this.client, m, args);
     }
 }

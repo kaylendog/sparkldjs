@@ -8,6 +8,7 @@ interface CommandOptions<S extends SyntaxParsable[]> {
     name: string;
     syntax: string | string[] | BaseType[];
     executable: CommandExecutable<S>;
+    permissionLevel: number;
     aliases?: string[];
     guild?: string;
     group?: string[];

@@ -3,7 +3,7 @@ import { EventEmitter } from "events";
 import { PathLike } from "fs";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { Command, CommandExecutable } from "../structures/Command";
-import { BaseConfig, BaseDefaultConfig, ConfigPlugin } from "../structures/ConfigPlugin";
+import { BaseConfig, BaseDefaultConfig, BaseGuildConfig, ConfigPlugin } from "../structures/ConfigPlugin";
 import { Plugin, PluginConstructor } from "../structures/Plugin";
 import { BaseType } from "../types/BaseType";
 import { SyntaxParsable } from "../types/SyntaxDefinitions";
@@ -22,7 +22,7 @@ interface TailClientOptions {
 export declare class TailClient extends EventEmitter {
     options: TailClientOptions;
     logger: Logger;
-    config?: ConfigPlugin<BaseConfig, BaseDefaultConfig>;
+    config: ConfigPlugin<BaseConfig<BaseGuildConfig>, BaseGuildConfig, BaseDefaultConfig<BaseGuildConfig>>;
     discord: Client;
     private pluginManager;
     private commandManager;
@@ -55,11 +55,11 @@ export declare class TailClient extends EventEmitter {
     /**
      * Creates and adds a command to the client
      * @param {string} name
-     * @param {number} permLevel
+     * @param {number} permissionLevel
      * @param {string|string[]|BaseType[]} syntax - Syntax to use for the command
      * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
      */
-    command<Syntax extends SyntaxParsable[]>(name: string, permLevel: number, syntax: string | string[] | BaseType[], executable: CommandExecutable<Syntax>): void;
+    command<Syntax extends SyntaxParsable[]>(name: string, permissionLevel: number, syntax: string | string[] | BaseType[], executable: CommandExecutable<Syntax>): void;
     /**
      * Adds a command to the client
      * @param {Command} command - Command to add
@@ -76,6 +76,6 @@ export declare class TailClient extends EventEmitter {
      * Adds a config plugin to the client
      * @param {ConfigPlugin|ConfigPluginConstructor} config - Config plugin to use
      */
-    useConfigPlugin<S extends BaseConfig, D extends BaseDefaultConfig>(config: (c: this) => ConfigPlugin<S, D>): this;
+    useConfigPlugin<S extends BaseConfig<G>, G extends BaseGuildConfig, D extends BaseDefaultConfig<G>>(config: (c: this) => ConfigPlugin<S, G, D>): this;
 }
 export {};
