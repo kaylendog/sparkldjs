@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const UserType_1 = require("../../test/UserType");
 const SyntaxParseError_1 = require("../errors/SyntaxParseError");
 const ChannelType_1 = require("../types/ChannelType");
 const DurationType_1 = require("../types/DurationType");
@@ -7,7 +8,6 @@ const MemberType_1 = require("../types/MemberType");
 const NumberType_1 = require("../types/NumberType");
 const RoleType_1 = require("../types/RoleType");
 const StringType_1 = require("../types/StringType");
-const UserType_1 = require("../types/UserType");
 exports.DEFAULT_SYNTAX_ERRORS = {
     NOT_ENOUGH_ARGS: (index, arg) => `expected arg type \`${arg.string}\` at position \`${index}\``,
     TOO_MANY_ARGS: (args) => `expected \`${args || "none"}\``,
