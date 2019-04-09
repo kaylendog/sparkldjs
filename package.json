@@ -15,6 +15,7 @@
 		"url": "https://twitter.com/sparklfox"
 	},
 	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"license": "MIT",
 	"dependencies": {
 		"@types/node": "^11.12.2",
