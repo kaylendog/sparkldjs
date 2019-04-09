@@ -38,7 +38,7 @@ const verifyPermission = async (c, m, cmd) => {
         });
     }
 };
-let COMMAND_INCREMENT = 0;
+const COMMAND_INCREMENT = 0;
 class CommandManager {
     constructor(client) {
         this.client = client;
@@ -61,8 +61,41 @@ class CommandManager {
         });
     }
     addCommand(command) {
+        const existingCommand = this.commands.find((v) => v.options.name === command.options.name);
+        // messy logic for testing if a command has already been added.
+        if (existingCommand && command.options.guild) {
+            // If existing command has an array of guilds
+            if (existingCommand.options.guild instanceof Array) {
+                existingCommand.options.guild.map((id) => {
+                    if (command.options.guild instanceof Array) {
+                        if (command.options.guild.indexOf(id) !== -1) {
+                            this.client.logger.warn(`Command ${command.options.name} has been duplicated in guild ID ${id}`);
+                        }
+                    }
+                    else if (command.options.guild === id) {
+                        this.client.logger.warn(`Command ${command.options.name} has been duplicated in guild ID ${id}`);
+                    }
+                });
+                // If it doesn't:
+            }
+            else if (command.options.guild instanceof Array) {
+                if (command.options.guild.indexOf(existingCommand.options
+                    .guild) !== -1) {
+                    this.client.logger.warn(`Command ${command.options.name} has been duplicated in guild ID ${existingCommand.options.guild}`);
+                }
+            }
+            else if (command.options.guild === existingCommand.options.guild) {
+                this.client.logger.warn(`Command ${command.options.name} has been duplicated in guild ID ${existingCommand.options.guild}`);
+            }
+        }
+        else {
+            if (existingCommand &&
+                existingCommand.options.group === command.options.group &&
+                existingCommand.options.name === command.options.name) {
+                this.client.logger.warn(`Potential command conflict in command name "${command.options.name}", group "${command.options.group}".`);
+            }
+        }
         this.commands.set(COMMAND_INCREMENT, command);
-        COMMAND_INCREMENT += 1;
     }
     execute(m, a) {
         let max = -1;

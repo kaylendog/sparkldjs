@@ -10,7 +10,7 @@ interface CommandOptions<S extends SyntaxParsable[]> {
     executable: CommandExecutable<S>;
     permissionLevel: number;
     aliases?: string[];
-    guild?: string;
+    guild?: string | string[];
     group?: string[];
     syntaxParser?: SyntaxParser;
 }

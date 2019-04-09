@@ -113,8 +113,12 @@ class TailClient extends events_1.EventEmitter {
      * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
      */
     command(name, permissionLevel, syntax, executable) {
+        const group = name.split(".").length > 1
+            ? name.split(".").slice(0, name.split(".").length - 1)
+            : undefined;
         return this.commandManager.addCommand(new Command_1.Command({
             executable,
+            group,
             name,
             permissionLevel,
             syntax,

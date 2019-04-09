@@ -19,7 +19,7 @@ interface CommandOptions<S extends SyntaxParsable[]> {
 	permissionLevel: number;
 
 	aliases?: string[];
-	guild?: string;
+	guild?: string | string[];
 	group?: string[];
 	syntaxParser?: SyntaxParser;
 }
