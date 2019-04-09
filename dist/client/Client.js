@@ -13,7 +13,7 @@ const CommandManager_1 = require("./CommandManager");
 const PluginManager_1 = require("./PluginManager");
 const DEFAULT_OPTIONS = {
     loggerDebugLevel: false,
-    name: "tailjs",
+    name: "sparkldjs",
 };
 /**
  * The main client used to interact with the API.
@@ -56,12 +56,15 @@ class SparklClient extends events_1.EventEmitter {
             this.logger.log("Starting...");
         }
         else {
-            this.logger.log("Starting... |", chalk_1.default.red("t") +
-                chalk_1.default.yellow("a") +
-                chalk_1.default.green("i") +
-                chalk_1.default.cyan("l") +
-                chalk_1.default.blue("j") +
-                chalk_1.default.magenta("s"), "0.1.0");
+            this.logger.log("Starting... |", chalk_1.default.red("s") +
+                chalk_1.default.yellow("p") +
+                chalk_1.default.green("a") +
+                chalk_1.default.cyan("r") +
+                chalk_1.default.blue("k") +
+                chalk_1.default.magenta("l") +
+                chalk_1.default.red("d") +
+                chalk_1.default.yellow("j") +
+                chalk_1.default.green("s"), "0.5.3");
         }
         if (token) {
             this.options.token = token;
@@ -151,12 +154,15 @@ class SparklClient extends events_1.EventEmitter {
 }
 exports.SparklClient = SparklClient;
 function logSettings(client) {
-    const headerString = `---------=[ ${chalk_1.default.red("t") +
-        chalk_1.default.yellow("a") +
-        chalk_1.default.green("i") +
-        chalk_1.default.cyan("l") +
-        chalk_1.default.blue("j") +
-        chalk_1.default.magenta("s")} 0.1.0 ]=---------`;
+    const headerString = `---------=[ ${chalk_1.default.red("s") +
+        chalk_1.default.yellow("p") +
+        chalk_1.default.green("a") +
+        chalk_1.default.cyan("r") +
+        chalk_1.default.blue("k") +
+        chalk_1.default.magenta("l") +
+        chalk_1.default.red("d") +
+        chalk_1.default.yellow("j") +
+        chalk_1.default.green("s")} 0.5.3 ]=---------`;
     client.logger.debug(headerString);
     client.logger.debug("Using the following settings:");
     Object.keys(client.options).forEach((key) => {
@@ -165,5 +171,5 @@ function logSettings(client) {
         // @ts-ignore
         client.options[key]}`);
     });
-    client.logger.debug("-".repeat(`---------=[ tailjs 0.1.0 ]=---------`.length));
+    client.logger.debug("-".repeat(`---------=[ sparkldjs 0.5.3 ]=---------`.length));
 }
