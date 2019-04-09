@@ -135,6 +135,8 @@ export class SparklClient extends EventEmitter {
 			);
 		}
 
+		this.on("error", this.logger.error);
+
 		this.emit("ready");
 
 		return this;
