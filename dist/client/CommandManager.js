@@ -38,7 +38,7 @@ const verifyPermission = async (c, m, cmd) => {
         });
     }
 };
-const COMMAND_INCREMENT = 0;
+let COMMAND_INCREMENT = 0;
 class CommandManager {
     constructor(client) {
         this.client = client;
@@ -95,25 +95,34 @@ class CommandManager {
                 this.client.logger.warn(`Potential command conflict in command name "${command.options.name}", group "${command.options.group}".`);
             }
         }
+        console.log(command);
         this.commands.set(COMMAND_INCREMENT, command);
+        COMMAND_INCREMENT += 1;
     }
     execute(m, a) {
         let max = -1;
         let key;
         this.commands
-            .filter((v, k) => v.options.group
-            ? JSON.stringify(v.options.group) ===
-                JSON.stringify(a.slice(0, v.options.group.length))
-                ? v.options.name === a[v.options.group.length] ||
-                    v.hasAlias(a[v.options.group.length])
-                : false
-            : v.options.name === a[0] || v.hasAlias(a[0]))
+            .filter((v) => 
+        // If there is a group
+        v.options.group
+            ? // If iteration command group matches args
+                JSON.stringify(v.options.group) ===
+                    JSON.stringify(a.slice(0, v.options.group.length))
+                    ? // If command name equals the first arg not part of the command group, or an alias exists for the command name
+                        v.options.name === a[v.options.group.length] ||
+                            v.hasAlias(a[v.options.group.length])
+                    : // No match for name
+                        false
+            : // Else check if name is same or alias exists
+                v.options.name === a[0] || v.hasAlias(a[0]))
             .forEach((c, k) => {
             if ((c.options.group ? c.options.group.length : 0) > max) {
                 max = c.options.group ? c.options.group.length : 0;
                 key = k;
             }
         });
+        console.log(key);
         if (util_1.isUndefined(key)) {
             return;
         }
@@ -127,11 +136,16 @@ class CommandManager {
         }
         catch (err) {
             if (err instanceof PermissionError_1.PermissionError) {
-                return m.channel.send(":negative_squared_cross_mark: Oops! Looks like you don't have the required permission to run this command.");
+                if (this.client.options.permissionErrorHandler) {
+                    return this.client.options.permissionErrorHandler(m, err);
+                }
+                else {
+                    return m.reply(`:x: Internal error! Ask the bot dev to check the bot logs.`);
+                }
             }
             else {
+                this.client.logger.error(err);
                 console.error(err);
-                return m.channel.send(":negative_squared_cross_mark: Internal Error. Please contact the developer.");
             }
         }
         cmd.execute(this.client, m, args);

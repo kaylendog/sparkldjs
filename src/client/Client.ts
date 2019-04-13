@@ -3,6 +3,7 @@ import { Client, Message } from "discord.js";
 import { EventEmitter } from "events";
 import { PathLike } from "fs";
 
+import { PermissionError } from "../errors/PermissionError";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { Command, CommandExecutable } from "../structures/Command";
 import {
@@ -22,6 +23,7 @@ interface SparklClientOptions {
 	loggerOutputToFile?: false | PathLike;
 	permissionOverrides?: string[];
 	syntaxErrorHandler?: (m: Message, err: SyntaxParseError) => any;
+	permissionErrorHandler?: (m: Message, err: PermissionError) => any;
 }
 const DEFAULT_OPTIONS: SparklClientOptions = {
 	loggerDebugLevel: false,
@@ -182,11 +184,13 @@ export class SparklClient extends EventEmitter {
 			name.split(".").length > 1
 				? name.split(".").slice(0, name.split(".").length - 1)
 				: undefined;
+		const nameMinusGroup = name.split(".").pop() || name;
+
 		return this.commandManager.addCommand(
 			new Command<Syntax>({
 				executable,
 				group,
-				name,
+				name: nameMinusGroup,
 				permissionLevel,
 				syntax,
 			}),

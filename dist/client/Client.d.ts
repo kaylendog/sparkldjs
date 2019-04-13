@@ -1,6 +1,7 @@
 import { Client, Message } from "discord.js";
 import { EventEmitter } from "events";
 import { PathLike } from "fs";
+import { PermissionError } from "../errors/PermissionError";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { Command, CommandExecutable } from "../structures/Command";
 import { BaseConfig, BaseDefaultConfig, BaseGuildConfig, ConfigPlugin } from "../structures/ConfigPlugin";
@@ -15,6 +16,7 @@ interface SparklClientOptions {
     loggerOutputToFile?: false | PathLike;
     permissionOverrides?: string[];
     syntaxErrorHandler?: (m: Message, err: SyntaxParseError) => any;
+    permissionErrorHandler?: (m: Message, err: PermissionError) => any;
 }
 /**
  * The main client used to interact with the API.

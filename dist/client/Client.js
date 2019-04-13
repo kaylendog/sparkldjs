@@ -120,10 +120,11 @@ class SparklClient extends events_1.EventEmitter {
         const group = name.split(".").length > 1
             ? name.split(".").slice(0, name.split(".").length - 1)
             : undefined;
+        const nameMinusGroup = name.split(".").pop() || name;
         return this.commandManager.addCommand(new Command_1.Command({
             executable,
             group,
-            name,
+            name: nameMinusGroup,
             permissionLevel,
             syntax,
         }));
