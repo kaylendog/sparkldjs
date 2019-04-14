@@ -153,7 +153,7 @@ export class CommandManager {
 		COMMAND_INCREMENT += 1;
 	}
 
-	private execute(m: Message, a: string[]) {
+	private async execute(m: Message, a: string[]) {
 		let max = -1;
 		let key: number | undefined;
 		this.commands
@@ -193,14 +193,14 @@ export class CommandManager {
 		);
 
 		try {
-			verifyPermission(this.client, m, cmd);
+			await verifyPermission(this.client, m, cmd);
 		} catch (err) {
 			if (err instanceof PermissionError) {
 				if (this.client.options.permissionErrorHandler) {
 					return this.client.options.permissionErrorHandler(m, err);
 				} else {
 					return m.reply(
-						`:x: Internal error! Ask the bot dev to check the bot logs.`,
+						`:x: You don't have permission to run this command!`,
 					);
 				}
 			} else {

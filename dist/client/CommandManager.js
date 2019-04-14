@@ -98,7 +98,7 @@ class CommandManager {
         this.commands.set(COMMAND_INCREMENT, command);
         COMMAND_INCREMENT += 1;
     }
-    execute(m, a) {
+    async execute(m, a) {
         let max = -1;
         let key;
         this.commands
@@ -130,7 +130,7 @@ class CommandManager {
         }
         const args = a.slice(cmd.options.group ? cmd.options.group.length + 1 : 1);
         try {
-            verifyPermission(this.client, m, cmd);
+            await verifyPermission(this.client, m, cmd);
         }
         catch (err) {
             if (err instanceof PermissionError_1.PermissionError) {
@@ -138,7 +138,7 @@ class CommandManager {
                     return this.client.options.permissionErrorHandler(m, err);
                 }
                 else {
-                    return m.reply(`:x: Internal error! Ask the bot dev to check the bot logs.`);
+                    return m.reply(`:x: You don't have permission to run this command!`);
                 }
             }
             else {
