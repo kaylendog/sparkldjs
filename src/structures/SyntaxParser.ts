@@ -139,16 +139,6 @@ export class SyntaxParser {
 						: undefined;
 
 				if (union) {
-					console.log(
-						new UnionType({
-							argName,
-							required,
-							rest,
-							types: union.map((v) =>
-								generateTypes(v as SyntaxString, argName),
-							),
-						}),
-					);
 					return this.syntax.push(
 						new UnionType({
 							argName,
