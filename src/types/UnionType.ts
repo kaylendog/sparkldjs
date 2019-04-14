@@ -46,7 +46,7 @@ export class UnionType extends BaseType {
 			}
 		});
 
-		if (totalFailed === this.options.types.length) {
+		if (totalFailed === this.options.types.length || allHaveFailed) {
 			throw new SyntaxParseError({
 				expectedArgument: this,
 				message: `could not parse \`${arg.value}\` to type \`${
@@ -55,12 +55,14 @@ export class UnionType extends BaseType {
 				recievedArgument: arg,
 				type: "PARSE_FAILED",
 			});
+		} else {
+			return values[0];
 		}
 	}
 	get string() {
 		return `${this.options.required ? "<" : "["}${
 			this.options.argName
-		}:${this.options.types.map((v) => this.options.typeName).join("|")}${
+		}:${this.options.types.map((v) => v.options.typeName).join("|")}${
 			this.options.rest ? "..." : ""
 		}${this.options.required ? ">" : "]"}`;
 	}

@@ -71,7 +71,7 @@ export class Command<S extends SyntaxParsable[]> {
 			c.logger.log(
 				`[cmd] [${
 					this.options.group
-						? `${this.options.group} ${this.options.name}`
+						? `${this.options.group.join(".")}.${this.options.name}`
 						: this.options.name
 				}] ID: ${m.author.id} - ${Date.now() - beginExecute}ms`,
 			);

@@ -36,7 +36,7 @@ class UnionType extends BaseType_1.BaseType {
                 }
             }
         });
-        if (totalFailed === this.options.types.length) {
+        if (totalFailed === this.options.types.length || allHaveFailed) {
             throw new SyntaxParseError_1.SyntaxParseError({
                 expectedArgument: this,
                 message: `could not parse \`${arg.value}\` to type \`${this.string}\``,
@@ -44,9 +44,12 @@ class UnionType extends BaseType_1.BaseType {
                 type: "PARSE_FAILED",
             });
         }
+        else {
+            return values[0];
+        }
     }
     get string() {
-        return `${this.options.required ? "<" : "["}${this.options.argName}:${this.options.types.map((v) => this.options.typeName).join("|")}${this.options.rest ? "..." : ""}${this.options.required ? ">" : "]"}`;
+        return `${this.options.required ? "<" : "["}${this.options.argName}:${this.options.types.map((v) => v.options.typeName).join("|")}${this.options.rest ? "..." : ""}${this.options.required ? ">" : "]"}`;
     }
 }
 exports.UnionType = UnionType;

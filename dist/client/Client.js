@@ -64,7 +64,7 @@ class SparklClient extends events_1.EventEmitter {
                 chalk_1.default.magenta("l") +
                 chalk_1.default.red("d") +
                 chalk_1.default.yellow("j") +
-                chalk_1.default.green("s"), "0.5.3");
+                chalk_1.default.green("s"), "0.4.0");
         }
         if (token) {
             this.options.token = token;
@@ -164,7 +164,7 @@ function logSettings(client) {
         chalk_1.default.magenta("l") +
         chalk_1.default.red("d") +
         chalk_1.default.yellow("j") +
-        chalk_1.default.green("s")} 0.5.3 ]=---------`;
+        chalk_1.default.green("s")} 0.4.0 ]=---------`;
     client.logger.debug(headerString);
     client.logger.debug("Using the following settings:");
     Object.keys(client.options).forEach((key) => {
@@ -173,5 +173,5 @@ function logSettings(client) {
         // @ts-ignore
         client.options[key]}`);
     });
-    client.logger.debug("-".repeat(`---------=[ sparkldjs 0.5.3 ]=---------`.length));
+    client.logger.debug("-".repeat(`---------=[ sparkldjs 0.4.0 ]=---------`.length));
 }

@@ -95,7 +95,6 @@ class CommandManager {
                 this.client.logger.warn(`Potential command conflict in command name "${command.options.name}", group "${command.options.group}".`);
             }
         }
-        console.log(command);
         this.commands.set(COMMAND_INCREMENT, command);
         COMMAND_INCREMENT += 1;
     }
@@ -122,7 +121,6 @@ class CommandManager {
                 key = k;
             }
         });
-        console.log(key);
         if (util_1.isUndefined(key)) {
             return;
         }

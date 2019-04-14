@@ -1,10 +1,5 @@
 import {
-	GuildChannel,
-	GuildMember,
-	Role as DJSRole,
-	TextChannel,
-	User as DJSUser,
-	VoiceChannel,
+    GuildChannel, GuildMember, Role as DJSRole, TextChannel, User as DJSUser, VoiceChannel
 } from "discord.js";
 
 export type Role = DJSRole;
@@ -14,10 +9,29 @@ export type Duration = number;
 export type User = DJSUser;
 
 export type SyntaxParsable =
-	| Role
 	| Channel
-	| Member
 	| Duration
-	| User
+	| Member
+	| number
+	| Role
 	| string
-	| number;
+	| User;
+
+export type SyntaxString =
+	| "channel"
+	| "duration"
+	| "member"
+	| "number"
+	| "role"
+	| "string"
+	| "user";
+
+export const VALID_SYNTAX_STRINGS: SyntaxString[] = [
+	"channel",
+	"duration",
+	"member",
+	"number",
+	"role",
+	"string",
+	"user",
+];

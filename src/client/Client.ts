@@ -103,7 +103,7 @@ export class SparklClient extends EventEmitter {
 					chalk.red("d") +
 					chalk.yellow("j") +
 					chalk.green("s"),
-				"0.5.3",
+				"0.4.0",
 			);
 		}
 		if (token) {
@@ -238,7 +238,7 @@ function logSettings(client: SparklClient) {
 		chalk.magenta("l") +
 		chalk.red("d") +
 		chalk.yellow("j") +
-		chalk.green("s")} 0.5.3 ]=---------`;
+		chalk.green("s")} 0.4.0 ]=---------`;
 	client.logger.debug(headerString);
 	client.logger.debug("Using the following settings:");
 	Object.keys(client.options).forEach((key) => {
@@ -251,6 +251,6 @@ function logSettings(client: SparklClient) {
 		);
 	});
 	client.logger.debug(
-		"-".repeat(`---------=[ sparkldjs 0.5.3 ]=---------`.length),
+		"-".repeat(`---------=[ sparkldjs 0.4.0 ]=---------`.length),
 	);
 }

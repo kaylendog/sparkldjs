@@ -9,6 +9,8 @@ import { MemberType } from "../types/MemberType";
 import { NumberType } from "../types/NumberType";
 import { RoleType } from "../types/RoleType";
 import { StringType } from "../types/StringType";
+import { SyntaxString, VALID_SYNTAX_STRINGS } from "../types/SyntaxDefinitions";
+import { UnionType } from "../types/UnionType";
 import { UserType } from "../types/UserType";
 
 export interface ParserOptions {
@@ -28,6 +30,68 @@ export const DEFAULT_SYNTAX_ERRORS = {
 		`expected arg type \`${arg.string}\` at position \`${index}\``,
 	TOO_MANY_ARGS: (args: string) => `expected \`${args || "none"}\``,
 };
+
+function generateTypes(
+	typeName: SyntaxString,
+	argName: string,
+	required?: boolean,
+	rest?: boolean,
+): BaseType {
+	if (VALID_SYNTAX_STRINGS.indexOf(typeName) === -1) {
+		throw Error(`Unknown type: ${typeName}`);
+	}
+	switch (typeName) {
+		case "number":
+			return new NumberType({
+				argName,
+				required,
+				rest,
+			});
+
+		case "string": {
+			return new StringType({
+				argName,
+				required,
+				rest,
+			});
+		}
+		case "user": {
+			return new UserType({
+				argName,
+				required,
+				rest,
+			});
+		}
+		case "member": {
+			return new MemberType({
+				argName,
+				required,
+				rest,
+			});
+		}
+		case "channel": {
+			return new ChannelType({
+				argName,
+				required,
+				rest,
+			});
+		}
+		case "role": {
+			return new RoleType({
+				argName,
+				required,
+				rest,
+			});
+		}
+		case "duration": {
+			return new DurationType({
+				argName,
+				required,
+				rest,
+			});
+		}
+	}
+}
 
 export class SyntaxParser {
 	private options: ParserOptions;
@@ -55,81 +119,53 @@ export class SyntaxParser {
 					required = true;
 				}
 
-				const type = rest
+				const type = (rest
 					? arg.split(":")[1].slice(0, -4)
-					: arg.split(":")[1].slice(0, -1);
+					: arg.split(":")[1].slice(0, -1)) as SyntaxString;
+
+				const union =
+					arg.split("|").length > 1
+						? arg
+								.split("|")
+								.map((v) =>
+									v.split(":").length > 1
+										? v.split(":")[1]
+										: v.endsWith(">")
+										? v.slice(0, v.length - 1)
+										: v.endsWith("...>")
+										? v.slice(0, v.length - 4)
+										: v,
+								)
+						: undefined;
+
+				if (union) {
+					console.log(
+						new UnionType({
+							argName,
+							required,
+							rest,
+							types: union.map((v) =>
+								generateTypes(v as SyntaxString, argName),
+							),
+						}),
+					);
+					return this.syntax.push(
+						new UnionType({
+							argName,
+							required,
+							rest,
+							types: union.map((v) =>
+								generateTypes(v as SyntaxString, argName),
+							),
+						}),
+					);
+				}
 
 				// split at name:type
 
-				switch (type) {
-					case "number":
-						this.syntax.push(
-							new NumberType({
-								argName,
-								required,
-								rest,
-							}),
-						);
-						break;
-					case "string": {
-						this.syntax.push(
-							new StringType({
-								argName,
-								required,
-								rest,
-							}),
-						);
-						break;
-					}
-					case "user": {
-						this.syntax.push(
-							new UserType({
-								argName,
-								required,
-								rest,
-							}),
-						);
-						break;
-					}
-					case "member": {
-						this.syntax.push(
-							new MemberType({
-								argName,
-								required,
-								rest,
-							}),
-						);
-						break;
-					}
-					case "channel": {
-						this.syntax.push(
-							new ChannelType({
-								argName,
-								required,
-								rest,
-							}),
-						);
-						break;
-					}
-					case "role": {
-						this.syntax.push(
-							new RoleType({
-								argName,
-								required,
-								rest,
-							}),
-						);
-					}
-					case "duration": {
-						this.syntax.push(
-							new DurationType({
-								argName,
-								required,
-								rest,
-							}),
-						);
-					}
-				}
+				return this.syntax.push(
+					generateTypes(type, argName, required, rest),
+				);
 			});
 		}
 	}

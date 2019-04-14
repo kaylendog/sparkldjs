@@ -9,7 +9,7 @@ class UserType extends BaseType_1.BaseType {
             argName: opts.argName,
             required: opts.required || false,
             rest: opts.rest,
-            typeName: "member",
+            typeName: "user",
         };
     }
     match(client, message, arg) {

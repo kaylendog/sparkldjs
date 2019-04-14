@@ -7,11 +7,68 @@ const MemberType_1 = require("../types/MemberType");
 const NumberType_1 = require("../types/NumberType");
 const RoleType_1 = require("../types/RoleType");
 const StringType_1 = require("../types/StringType");
+const SyntaxDefinitions_1 = require("../types/SyntaxDefinitions");
+const UnionType_1 = require("../types/UnionType");
 const UserType_1 = require("../types/UserType");
 exports.DEFAULT_SYNTAX_ERRORS = {
     NOT_ENOUGH_ARGS: (index, arg) => `expected arg type \`${arg.string}\` at position \`${index}\``,
     TOO_MANY_ARGS: (args) => `expected \`${args || "none"}\``,
 };
+function generateTypes(typeName, argName, required, rest) {
+    if (SyntaxDefinitions_1.VALID_SYNTAX_STRINGS.indexOf(typeName) === -1) {
+        throw Error(`Unknown type: ${typeName}`);
+    }
+    switch (typeName) {
+        case "number":
+            return new NumberType_1.NumberType({
+                argName,
+                required,
+                rest,
+            });
+        case "string": {
+            return new StringType_1.StringType({
+                argName,
+                required,
+                rest,
+            });
+        }
+        case "user": {
+            return new UserType_1.UserType({
+                argName,
+                required,
+                rest,
+            });
+        }
+        case "member": {
+            return new MemberType_1.MemberType({
+                argName,
+                required,
+                rest,
+            });
+        }
+        case "channel": {
+            return new ChannelType_1.ChannelType({
+                argName,
+                required,
+                rest,
+            });
+        }
+        case "role": {
+            return new RoleType_1.RoleType({
+                argName,
+                required,
+                rest,
+            });
+        }
+        case "duration": {
+            return new DurationType_1.DurationType({
+                argName,
+                required,
+                rest,
+            });
+        }
+    }
+}
 class SyntaxParser {
     constructor(options) {
         this.options = options;
@@ -36,65 +93,36 @@ class SyntaxParser {
                     // if < is present, arg is not optional
                     required = true;
                 }
-                const type = rest
+                const type = (rest
                     ? arg.split(":")[1].slice(0, -4)
-                    : arg.split(":")[1].slice(0, -1);
-                // split at name:type
-                switch (type) {
-                    case "number":
-                        this.syntax.push(new NumberType_1.NumberType({
-                            argName,
-                            required,
-                            rest,
-                        }));
-                        break;
-                    case "string": {
-                        this.syntax.push(new StringType_1.StringType({
-                            argName,
-                            required,
-                            rest,
-                        }));
-                        break;
-                    }
-                    case "user": {
-                        this.syntax.push(new UserType_1.UserType({
-                            argName,
-                            required,
-                            rest,
-                        }));
-                        break;
-                    }
-                    case "member": {
-                        this.syntax.push(new MemberType_1.MemberType({
-                            argName,
-                            required,
-                            rest,
-                        }));
-                        break;
-                    }
-                    case "channel": {
-                        this.syntax.push(new ChannelType_1.ChannelType({
-                            argName,
-                            required,
-                            rest,
-                        }));
-                        break;
-                    }
-                    case "role": {
-                        this.syntax.push(new RoleType_1.RoleType({
-                            argName,
-                            required,
-                            rest,
-                        }));
-                    }
-                    case "duration": {
-                        this.syntax.push(new DurationType_1.DurationType({
-                            argName,
-                            required,
-                            rest,
-                        }));
-                    }
+                    : arg.split(":")[1].slice(0, -1));
+                const union = arg.split("|").length > 1
+                    ? arg
+                        .split("|")
+                        .map((v) => v.split(":").length > 1
+                        ? v.split(":")[1]
+                        : v.endsWith(">")
+                            ? v.slice(0, v.length - 1)
+                            : v.endsWith("...>")
+                                ? v.slice(0, v.length - 4)
+                                : v)
+                    : undefined;
+                if (union) {
+                    console.log(new UnionType_1.UnionType({
+                        argName,
+                        required,
+                        rest,
+                        types: union.map((v) => generateTypes(v, argName)),
+                    }));
+                    return this.syntax.push(new UnionType_1.UnionType({
+                        argName,
+                        required,
+                        rest,
+                        types: union.map((v) => generateTypes(v, argName)),
+                    }));
                 }
+                // split at name:type
+                return this.syntax.push(generateTypes(type, argName, required, rest));
             });
         }
     }

@@ -10,7 +10,7 @@ interface UnionTypeOptions extends BaseTypeOptions {
 export declare class UnionType extends BaseType {
     options: UnionTypeOptions;
     constructor(opts: UnionTypeOptions);
-    match(client: SparklClient, message: Message, arg: IBaseTypeArg): void;
+    match(client: SparklClient, message: Message, arg: IBaseTypeArg): any;
     readonly string: string;
 }
 export {};

@@ -149,7 +149,6 @@ export class CommandManager {
 				);
 			}
 		}
-		console.log(command);
 		this.commands.set(COMMAND_INCREMENT, command);
 		COMMAND_INCREMENT += 1;
 	}
@@ -179,7 +178,6 @@ export class CommandManager {
 				}
 			});
 
-		console.log(key);
 		if (isUndefined(key)) {
 			return;
 		}

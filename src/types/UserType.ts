@@ -12,7 +12,7 @@ export class UserType extends BaseType {
 			argName: opts.argName,
 			required: opts.required || false,
 			rest: opts.rest,
-			typeName: "member",
+			typeName: "user",
 		};
 	}
 	public match(client: SparklClient, message: Message, arg: IBaseTypeArg) {

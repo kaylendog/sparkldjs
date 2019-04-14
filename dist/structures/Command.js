@@ -37,7 +37,7 @@ class Command {
                 timestamp: new Date(),
             });
             c.logger.log(`[cmd] [${this.options.group
-                ? `${this.options.group} ${this.options.name}`
+                ? `${this.options.group.join(".")}.${this.options.name}`
                 : this.options.name}] ID: ${m.author.id} - ${Date.now() - beginExecute}ms`);
             await this.options.executable(c, m, parsedArguments);
             c.logger.debug(`[cmd] [${this.options.group
