@@ -5,7 +5,7 @@ import { SparklClient } from "../client/Client";
 export class Embed extends RichEmbed {
 	public client: SparklClient;
 
-	constructor(client: SparklClient, opts: RichEmbedOptions) {
+	constructor(client: SparklClient, opts?: RichEmbedOptions) {
 		super(opts);
 		this.client = client;
 
