@@ -17,6 +17,8 @@ var Command_1 = require("./structures/Command");
 exports.Command = Command_1.Command;
 var ConfigPlugin_1 = require("./structures/ConfigPlugin");
 exports.ConfigPlugin = ConfigPlugin_1.ConfigPlugin;
+var Embed_1 = require("./structures/Embed");
+exports.Embed = Embed_1.Embed;
 exports.SyntaxTypes = {
     ChannelType: ChannelType_1.ChannelType,
     DurationType: DurationType_1.DurationType,

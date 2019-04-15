@@ -18,6 +18,8 @@ export {
 	ConfigPlugin,
 } from "./structures/ConfigPlugin";
 
+export { Embed } from "./structures/Embed";
+
 export const SyntaxTypes = {
 	ChannelType,
 	DurationType,

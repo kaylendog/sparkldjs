@@ -84,7 +84,10 @@ class SparklClient extends events_1.EventEmitter {
             this.logger.warn("It is not recommended to proceed with your current token, as your account may be terminated.");
             this.logger.warn("You can read more here: https://discordapp.com/guidelines");
         }
-        this.discord.on("error", (e) => this.logger.error(e));
+        this.discord.on("error", (e) => {
+            this.logger.error(e.message);
+            this.logger.debug(e);
+        });
         this.emit("ready");
         return this;
     }

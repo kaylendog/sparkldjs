@@ -137,7 +137,10 @@ export class SparklClient extends EventEmitter {
 			);
 		}
 
-		this.discord.on("error", (e) => this.logger.error(e));
+		this.discord.on("error", (e) => {
+			this.logger.error(e.message);
+			this.logger.debug(e);
+		});
 
 		this.emit("ready");
 
