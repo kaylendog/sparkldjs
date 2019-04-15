@@ -1,7 +1,7 @@
 {
 	"name": "sparkldjs",
 	"description": "DiscordJS wrapper-framework thing designed to make bot developing fluffy",
-	"version": "0.4.2",
+	"version": "0.4.3",
 	"scripts": {
 		"release": "release-it patch -n"
 	},
