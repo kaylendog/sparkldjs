@@ -76,7 +76,7 @@ export class CommandManager {
 			if (m.cleanContent.startsWith(prefix)) {
 				const args = m.content
 					.slice(prefix.length)
-					.trim()
+					// .trim()
 					.split(/ +/g);
 				if (args) {
 					this.execute(m, args);
