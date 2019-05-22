@@ -14,7 +14,7 @@ class PluginManager {
             await Promise.all(pluginWillStartIterator);
             // Synchronously start plugins
             this.plugins.forEach((v) => (v.start ? v.start() : null));
-            this.client.logger.log("Done.");
+            this.client.logger.info("Done.");
             this.hasStarted = true;
         });
     }

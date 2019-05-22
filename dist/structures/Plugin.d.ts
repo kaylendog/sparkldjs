@@ -1,6 +1,5 @@
-import { Client } from "discord.js";
+import * as winston from "winston";
 import { SparklClient } from "../client/Client";
-import { Logger } from "../util/Logger";
 export declare interface Plugin {
     pluginName: string;
     client: SparklClient;
@@ -13,8 +12,7 @@ export declare type PluginConstructor = new (c: SparklClient) => Plugin;
 export declare class Plugin {
     static pluginName: string;
     client: SparklClient;
-    logger: Logger;
-    discord: Client;
+    logger: winston.Logger;
     constructor(client: SparklClient);
 }
 export declare function plugin(name: string, onStart: () => any): (client: SparklClient) => Plugin;

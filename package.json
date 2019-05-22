@@ -18,12 +18,15 @@
 	"types": "dist/index.d.ts",
 	"license": "MIT",
 	"dependencies": {
+		"@types/events": "^3.0.0",
 		"@types/node": "^11.12.2",
+		"@types/winston": "^2.4.4",
 		"chalk": "^2.4.2",
 		"discord.js": "^11.4.2",
 		"moment": "^2.24.0",
 		"path": "^0.12.7",
-		"uws": "^100.0.1"
+		"uws": "^100.0.1",
+		"winston": "^3.2.1"
 	},
 	"devDependencies": {
 		"release-it": "^10.3.1"

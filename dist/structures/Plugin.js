@@ -4,8 +4,6 @@ class Plugin {
     constructor(client) {
         this.client = client;
         this.logger = this.client.logger;
-        this.discord = this.client.discord;
-        this.sendMessage = this.client.sendMessage;
     }
 }
 exports.Plugin = Plugin;

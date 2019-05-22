@@ -1,7 +1,6 @@
-import { Client } from "discord.js";
+import * as winston from "winston";
 
 import { SparklClient } from "../client/Client";
-import { Logger } from "../util/Logger";
 
 export declare interface Plugin {
 	pluginName: string;
@@ -18,14 +17,11 @@ export type PluginConstructor = new (c: SparklClient) => Plugin;
 export class Plugin {
 	public static pluginName: string;
 	public client: SparklClient;
-	public logger: Logger;
-	public discord: Client;
+	public logger: winston.Logger;
 
 	constructor(client: SparklClient) {
 		this.client = client;
 		this.logger = this.client.logger;
-		this.discord = this.client.discord;
-		this.sendMessage = this.client.sendMessage;
 	}
 }
 

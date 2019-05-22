@@ -5,7 +5,7 @@ class Embed extends discord_js_1.RichEmbed {
     constructor(client, opts) {
         super(opts);
         this.client = client;
-        this.setFooter(client.options.name, client.discord.user.avatarURL);
+        this.setFooter(client.options.name, client.user.avatarURL);
         this.setColor(0x7289da);
         this.setTimestamp();
     }

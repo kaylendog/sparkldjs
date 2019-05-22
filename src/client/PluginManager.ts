@@ -15,8 +15,11 @@ export class PluginManager {
 		this.hasStarted = false;
 
 		this.client.on("ready", async () => {
+			if (this.pluginCount < 1) {
+				return this.client.logger.debug(`No plugin(s) to start`);
+			}
 			this.client.logger.debug(
-				`Warming up plugins - ${this.pluginCount} module(s) to start...`,
+				`Warming up plugins - ${this.pluginCount} plugin(s) to start...`,
 			);
 
 			// Wait for plugins to start
@@ -28,7 +31,7 @@ export class PluginManager {
 
 			// Synchronously start plugins
 			this.plugins.forEach((v) => (v.start ? v.start() : null));
-			this.client.logger.log("Done.");
+			this.client.logger.info("Done.");
 			this.hasStarted = true;
 		});
 	}
@@ -56,7 +59,7 @@ export class PluginManager {
 	 * @param {object} data - Plugin data
 	 * @param {string} data.name - Name of the module
 	 */
-	public createPlugin(name: string, start: () => any) {
+	public createPlugin(name: string, start: () => void) {
 		const moduleToAdd = new Plugin(this.client);
 		moduleToAdd.pluginName = name;
 		moduleToAdd.start = start;
