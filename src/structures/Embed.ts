@@ -1,4 +1,4 @@
-import { Client, RichEmbed, RichEmbedOptions } from "discord.js";
+import { RichEmbed, RichEmbedOptions } from "discord.js";
 
 import { SparklClient } from "../client/Client";
 
@@ -9,7 +9,7 @@ export class Embed extends RichEmbed {
 		super(opts);
 		this.client = client;
 
-		this.setFooter(client.options.name, client.discord.user.avatarURL);
+		this.setFooter(client.options.name, client.user.avatarURL);
 		this.setColor(0x7289da);
 		this.setTimestamp();
 	}

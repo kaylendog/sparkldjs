@@ -1,82 +1,59 @@
 import chalk from "chalk";
-import { Client, Message } from "discord.js";
-import { EventEmitter } from "events";
-import { PathLike } from "fs";
+import { Client, ClientOptions, Message } from "discord.js";
+import * as winston from "winston";
 
 import { PermissionError } from "../errors/PermissionError";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
-import { Command, CommandExecutable } from "../structures/Command";
-import {
-    BaseConfig, BaseDefaultConfig, BaseGuildConfig, ConfigPlugin
-} from "../structures/ConfigPlugin";
+import { ConfigProvider } from "../structures/ConfigProvider";
+import { DefaultConfigProvider } from "../structures/DefaultConfigProvider";
 import { Plugin, PluginConstructor } from "../structures/Plugin";
-import { BaseType } from "../types/BaseType";
-import { SyntaxParsable } from "../types/SyntaxDefinitions";
-import { Logger } from "../util/Logger";
-import { CommandManager } from "./CommandManager";
+import { DEFAULT_OPTIONS, VERSION } from "../util/Constants";
+import { createLogger, rainbow } from "../util/Util";
+import { CommandRegistry } from "./CommandRegistry";
 import { PluginManager } from "./PluginManager";
 
-interface SparklClientOptions {
+interface SparklClientOptions extends ClientOptions {
 	token?: string;
 	name?: string;
-	loggerDebugLevel?: false | "quiet" | "verbose";
-	loggerOutputToFile?: false | PathLike;
+	loggerDebugLevel?: 0 | 1 | 2;
 	permissionOverrides?: string[];
 	syntaxErrorHandler?: (m: Message, err: SyntaxParseError) => any;
 	permissionErrorHandler?: (m: Message, err: PermissionError) => any;
 }
-const DEFAULT_OPTIONS: SparklClientOptions = {
-	loggerDebugLevel: false,
-	name: "sparkldjs",
-};
 
 /**
  * The main client used to interact with the API.
  */
-export class SparklClient extends EventEmitter {
+export class SparklClient extends Client {
 	public options: SparklClientOptions;
-	public logger: Logger;
+	public logger: winston.Logger;
 
-	public config: ConfigPlugin<
-		BaseConfig<BaseGuildConfig>,
-		BaseGuildConfig,
-		BaseDefaultConfig<BaseGuildConfig>
-	>;
-
-	public discord: Client;
+	public config: ConfigProvider<any>;
+	public registry: CommandRegistry;
 
 	private pluginManager: PluginManager;
-	private commandManager: CommandManager;
+	private pluginHandlerMap: Map<string, any[]>;
+
 	/**
 	 * @param {SparklClientOptions} [options] Options for the client
 	 */
 	constructor(options?: SparklClientOptions) {
-		super();
+		super(options);
 		this.options = Object.assign(DEFAULT_OPTIONS, options);
-
 		// Public declarations
-		this.logger = new Logger(this);
+		this.logger = createLogger(this.options.loggerDebugLevel || 0);
+		this.config = new DefaultConfigProvider();
 
 		// Private declarations
-		this.discord = new Client();
 		this.pluginManager = new PluginManager(this);
-		this.commandManager = new CommandManager(this);
+		this.registry = new CommandRegistry(this);
+		this.pluginHandlerMap = new Map();
 
-		this.config = new ConfigPlugin(
-			this,
-			{
-				commandPermmisions: {},
-				guilds: {},
-			},
-			{
-				guilds: {
-					permissions: {},
-					prefix: "!",
-				},
-			},
-		);
-
-		this.discord.on("debug", (m) => this.logger.debug(m, "verbose"));
+		this.on("debug", (m: string) => this.logger.debug(m));
+		this.on("error", (e: Error) => {
+			this.logger.error(e.message);
+			this.logger.debug(e);
+		});
 	}
 
 	/**
@@ -88,44 +65,39 @@ export class SparklClient extends EventEmitter {
 	 * 		console.log("Logged in!");
 	 * });
 	 */
-	public async start(token?: string) {
+	public async login(token?: string): Promise<string> {
 		if (this.options.loggerDebugLevel) {
-			this.logger.log("Starting...");
+			this.logger.info("Starting...");
 		} else {
-			this.logger.log(
-				"Starting... |",
-				chalk.red("s") +
-					chalk.yellow("p") +
-					chalk.green("a") +
-					chalk.cyan("r") +
-					chalk.blue("k") +
-					chalk.magenta("l") +
-					chalk.red("d") +
-					chalk.yellow("j") +
-					chalk.green("s"),
-				"0.4.3",
+			this.logger.info(
+				"Starting... | " + rainbow("sparkldjs") + " v" + VERSION,
 			);
 		}
+		if (!token && !this.options.token) {
+			throw TypeError("No token provided");
+		}
+
 		if (token) {
 			this.options.token = token;
-		} else if (!this.options.token) {
-			return this.logger.error("No token provided - cannot log in.");
 		}
 
 		logSettings(this);
 
-		await this.discord.login(this.options.token).catch((err) => {
+		await super.login(this.options.token).catch((err) => {
 			this.logger.error(err);
-			return this;
+			this.logger.error("Failed to connect to Discord.");
+			process.exit(err.code);
+			return token;
 		});
-		this.logger.success("Connected and logged into Discord API.");
+
+		this.logger.info("Connected and logged into Discord API.");
 		this.logger.debug(
-			`Authed for user ${chalk.green(this.discord.user.tag)}, ${
-				this.discord.user.id
-			}`,
+			`Authed for user ${chalk.green(this.user.tag)}, ${this.user.id}`,
 		);
 
-		if (!this.discord.user.bot) {
+		this.config.init(this);
+
+		if (!this.user.bot) {
 			this.logger.warn(
 				"The automation of user accounts is in violation of Discord's terms of service!",
 			);
@@ -137,21 +109,15 @@ export class SparklClient extends EventEmitter {
 			);
 		}
 
-		this.discord.on("error", (e) => {
-			this.logger.error(e.message);
-			this.logger.debug(e);
-		});
-
-		this.emit("ready");
-
-		return this;
+		return this.options.token as string;
 	}
 
 	/**
 	 * Disconnects the client from the API
 	 */
 	public disconnect() {
-		this.discord.destroy();
+		super.destroy();
+
 		return this;
 	}
 
@@ -171,77 +137,35 @@ export class SparklClient extends EventEmitter {
 	}
 
 	/**
-	 * Creates and adds a command to the client
-	 * @param {string} name
-	 * @param {number} permissionLevel
-	 * @param {string|string[]|BaseType[]} syntax - Syntax to use for the command
-	 * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
-	 */
-	public command<Syntax extends SyntaxParsable[]>(
-		name: string,
-		permissionLevel: number,
-		syntax: string | string[] | BaseType[],
-		executable: CommandExecutable<Syntax>,
-	) {
-		const group =
-			name.split(".").length > 1
-				? name.split(".").slice(0, name.split(".").length - 1)
-				: undefined;
-		const nameMinusGroup = name.split(".").pop() || name;
-
-		return this.commandManager.addCommand(
-			new Command<Syntax>({
-				executable,
-				group,
-				name: nameMinusGroup,
-				permissionLevel,
-				syntax,
-			}),
-		);
-	}
-
-	/**
-	 * Adds a command to the client
-	 * @param {Command} command - Command to add
-	 */
-	public addCommand(command: Command<SyntaxParsable[]>) {
-		this.commandManager.addCommand(command);
-	}
-
-	/**
-	 * Used for sending messages between plugins
-	 * @param {string} dest - Destination module
-	 * @param {string }type - Event type
-	 * @param {...any[]} data - Data to send
-	 */
-	public sendMessage(dest: string, type: string, ...data: any[]) {
-		return this.pluginManager.sendMessage(dest, type, ...data);
-	}
-
-	/**
 	 * Adds a config plugin to the client
 	 * @param {ConfigPlugin|ConfigPluginConstructor} config - Config plugin to use
 	 */
-	public useConfigPlugin<
-		S extends BaseConfig<G>,
-		G extends BaseGuildConfig,
-		D extends BaseDefaultConfig<G>
-	>(config: (c: this) => ConfigPlugin<S, G, D>) {
-		this.config = config(this);
+	public useConfigProvider(provider: ConfigProvider<any>) {
+		this.config = provider;
+		return this;
+	}
+
+	public on(eventName: string, listener: any, plugin?: string) {
+		super.on(eventName, listener);
+
+		if (plugin) {
+			let pluginListeners = this.pluginHandlerMap.get(plugin);
+			if (pluginListeners) {
+				pluginListeners.push(listener);
+			} else {
+				pluginListeners = [listener];
+			}
+			this.pluginHandlerMap.set(plugin, pluginListeners);
+		}
+
 		return this;
 	}
 }
 
 function logSettings(client: SparklClient) {
-	const headerString = `---------=[ ${chalk.red("s") +
-		chalk.yellow("p") +
-		chalk.green("a") +
-		chalk.cyan("r") +
-		chalk.blue("k") +
-		chalk.magenta("l") +
-		chalk.red("d") +
-		chalk.yellow("j") +
-		chalk.green("s")} 0.4.3 ]=---------`;
+	const headerString = `---------=[ ${rainbow(
+		"sparkldjs",
+	)} ${VERSION} ]=---------`;
 	client.logger.debug(headerString);
 	client.logger.debug("Using the following settings:");
 	Object.keys(client.options).forEach((key) => {
@@ -254,6 +178,6 @@ function logSettings(client: SparklClient) {
 		);
 	});
 	client.logger.debug(
-		"-".repeat(`---------=[ sparkldjs 0.4.3 ]=---------`.length),
+		"-".repeat(`---------=[ sparkldjs ${VERSION} ]=---------`.length),
 	);
 }

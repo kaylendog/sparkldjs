@@ -8,13 +8,16 @@ class PluginManager {
         this.plugins = new discord_js_1.Collection();
         this.hasStarted = false;
         this.client.on("ready", async () => {
-            this.client.logger.debug(`Warming up plugins - ${this.pluginCount} module(s) to start...`);
-            // Wait for plugins to start
+            if (this.pluginCount < 1) {
+                return this.client.logger.debug(`No plugin(s) to initialise`);
+            }
+            this.client.logger.debug(`Warming up plugins - ${this.pluginCount} plugin(s) to initialise...`);
+            // Wait for plugins to initialise
             const pluginWillStartIterator = this.plugins.map(async (v) => await (v.onPluginWillStart ? v.onPluginWillStart() : null));
             await Promise.all(pluginWillStartIterator);
-            // Synchronously start plugins
-            this.plugins.forEach((v) => (v.start ? v.start() : null));
-            this.client.logger.log("Done.");
+            // Synchronously init plugins
+            this.plugins.forEach((v) => (v.init ? v.init() : null));
+            this.client.logger.info("Done.");
             this.hasStarted = true;
         });
     }
@@ -33,7 +36,7 @@ class PluginManager {
         this.plugins.set(m.pluginName, m);
         if (this.hasStarted) {
             await m.onPluginWillStart();
-            m.start();
+            m.init();
         }
     }
     /**
@@ -41,10 +44,10 @@ class PluginManager {
      * @param {object} data - Plugin data
      * @param {string} data.name - Name of the module
      */
-    createPlugin(name, start) {
+    createPlugin(name, init) {
         const moduleToAdd = new Plugin_1.Plugin(this.client);
         moduleToAdd.pluginName = name;
-        moduleToAdd.start = start;
+        moduleToAdd.init = init;
         this.addPlugin(moduleToAdd);
     }
     /**

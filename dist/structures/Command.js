@@ -36,7 +36,7 @@ class Command {
                 m,
                 timestamp: new Date(),
             });
-            c.logger.log(`[cmd] [${this.options.group
+            c.logger.info(`[cmd] [${this.options.group
                 ? `${this.options.group.join(".")}.${this.options.name}`
                 : this.options.name}] ID: ${m.author.id} - ${Date.now() - beginExecute}ms`);
             await this.options.executable(c, m, parsedArguments);
@@ -71,8 +71,3 @@ class Command {
     }
 }
 exports.Command = Command;
-/*
-function syntaxMatch<S extends BaseType[], T extends keyof S>(s: any[]): s is S {
-    return s.map((v, i) => ().indexOf(false) === -1 ? true : false;
-}
-*/

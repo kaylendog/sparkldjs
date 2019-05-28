@@ -68,7 +68,7 @@ export class Command<S extends SyntaxParsable[]> {
 				m,
 				timestamp: new Date(),
 			});
-			c.logger.log(
+			c.logger.info(
 				`[cmd] [${
 					this.options.group
 						? `${this.options.group.join(".")}.${this.options.name}`
@@ -112,9 +112,3 @@ export class Command<S extends SyntaxParsable[]> {
 		return false;
 	}
 }
-
-/*
-function syntaxMatch<S extends BaseType[], T extends keyof S>(s: any[]): s is S {
-	return s.map((v, i) => ().indexOf(false) === -1 ? true : false;
-}
-*/

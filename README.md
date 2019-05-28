@@ -27,16 +27,6 @@ import * as sparkldjs from "sparkldjs";
 const sparkldjs = require("sparkldjs/dist");
 ```
 
-### Quick note on npm link
-
-Running npm link jisco will trigger the current package (whose directory you're currently working in) to be accessible from anywhere on your local machine through the require/import methods.
-
-```
-$ npm link jisco
-```
-
-This will allow you to `import "jisco"` and `require("jisco")` without having to use relative file paths.
-
 [1]: https://discord.js.org/#/docs/commando/master/general/welcome
 [2]: https://twitter.com/sparklfox
 [3]: https://discordapp.com/

@@ -39,7 +39,7 @@ export class UserType extends BaseType {
 			});
 		}
 
-		const user = client.discord.users.find(
+		const user = client.users.find(
 			(v) => v.id === snowflake || v.tag === tag,
 		);
 		if (!user) {

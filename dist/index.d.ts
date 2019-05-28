@@ -9,7 +9,6 @@ export { SparklClient } from "./client/Client";
 export { Plugin } from "./structures/Plugin";
 export { PluginWithConfig } from "./structures/PluginWithConfig";
 export { Command } from "./structures/Command";
-export { BaseConfig, BaseDefaultConfig, BaseGuildConfig, BaseGuildPermissions, ConfigPlugin, } from "./structures/ConfigPlugin";
 export { Embed } from "./structures/Embed";
 export declare const SyntaxTypes: {
     ChannelType: typeof ChannelType;

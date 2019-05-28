@@ -32,7 +32,7 @@ class UserType extends BaseType_1.BaseType {
                 type: "PARSE_FAILED",
             });
         }
-        const user = client.discord.users.find((v) => v.id === snowflake || v.tag === tag);
+        const user = client.users.find((v) => v.id === snowflake || v.tag === tag);
         if (!user) {
             throw new SyntaxParseError_1.SyntaxParseError({
                 expectedArgument: this,

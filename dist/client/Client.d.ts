@@ -1,19 +1,14 @@
-import { Client, Message } from "discord.js";
-import { EventEmitter } from "events";
-import { PathLike } from "fs";
+import { Client, ClientOptions, Message } from "discord.js";
+import * as winston from "winston";
 import { PermissionError } from "../errors/PermissionError";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
-import { Command, CommandExecutable } from "../structures/Command";
-import { BaseConfig, BaseDefaultConfig, BaseGuildConfig, ConfigPlugin } from "../structures/ConfigPlugin";
+import { ConfigProvider } from "../structures/ConfigProvider";
 import { Plugin, PluginConstructor } from "../structures/Plugin";
-import { BaseType } from "../types/BaseType";
-import { SyntaxParsable } from "../types/SyntaxDefinitions";
-import { Logger } from "../util/Logger";
-interface SparklClientOptions {
+import { CommandRegistry } from "./CommandRegistry";
+interface SparklClientOptions extends ClientOptions {
     token?: string;
     name?: string;
-    loggerDebugLevel?: false | "quiet" | "verbose";
-    loggerOutputToFile?: false | PathLike;
+    loggerDebugLevel?: 0 | 1 | 2;
     permissionOverrides?: string[];
     syntaxErrorHandler?: (m: Message, err: SyntaxParseError) => any;
     permissionErrorHandler?: (m: Message, err: PermissionError) => any;
@@ -21,13 +16,13 @@ interface SparklClientOptions {
 /**
  * The main client used to interact with the API.
  */
-export declare class SparklClient extends EventEmitter {
+export declare class SparklClient extends Client {
     options: SparklClientOptions;
-    logger: Logger;
-    config: ConfigPlugin<BaseConfig<BaseGuildConfig>, BaseGuildConfig, BaseDefaultConfig<BaseGuildConfig>>;
-    discord: Client;
+    logger: winston.Logger;
+    config: ConfigProvider<any>;
+    registry: CommandRegistry;
     private pluginManager;
-    private commandManager;
+    private pluginHandlerMap;
     /**
      * @param {SparklClientOptions} [options] Options for the client
      */
@@ -41,7 +36,7 @@ export declare class SparklClient extends EventEmitter {
      * 		console.log("Logged in!");
      * });
      */
-    start(token?: string): Promise<void | this>;
+    login(token?: string): Promise<string>;
     /**
      * Disconnects the client from the API
      */
@@ -55,29 +50,10 @@ export declare class SparklClient extends EventEmitter {
      */
     addPlugin(...modules: Array<Plugin | PluginConstructor>): this;
     /**
-     * Creates and adds a command to the client
-     * @param {string} name
-     * @param {number} permissionLevel
-     * @param {string|string[]|BaseType[]} syntax - Syntax to use for the command
-     * @param {CommandExecutable<Syntax>} executable - Callback to run when the command is triggered
-     */
-    command<Syntax extends SyntaxParsable[]>(name: string, permissionLevel: number, syntax: string | string[] | BaseType[], executable: CommandExecutable<Syntax>): void;
-    /**
-     * Adds a command to the client
-     * @param {Command} command - Command to add
-     */
-    addCommand(command: Command<SyntaxParsable[]>): void;
-    /**
-     * Used for sending messages between plugins
-     * @param {string} dest - Destination module
-     * @param {string }type - Event type
-     * @param {...any[]} data - Data to send
-     */
-    sendMessage(dest: string, type: string, ...data: any[]): void;
-    /**
      * Adds a config plugin to the client
      * @param {ConfigPlugin|ConfigPluginConstructor} config - Config plugin to use
      */
-    useConfigPlugin<S extends BaseConfig<G>, G extends BaseGuildConfig, D extends BaseDefaultConfig<G>>(config: (c: this) => ConfigPlugin<S, G, D>): this;
+    useConfigProvider(provider: ConfigProvider<any>): this;
+    on(eventName: string, listener: any, plugin?: string): this;
 }
 export {};
