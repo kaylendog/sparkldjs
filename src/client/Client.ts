@@ -1,12 +1,13 @@
 import chalk from "chalk";
-import { Client, ClientOptions, Message, Util } from "discord.js";
+import { Client, ClientOptions, Message } from "discord.js";
 import * as winston from "winston";
 
 import { PermissionError } from "../errors/PermissionError";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
 import { ConfigProvider } from "../structures/ConfigProvider";
+import { DefaultConfigProvider } from "../structures/DefaultConfigProvider";
 import { Plugin, PluginConstructor } from "../structures/Plugin";
-import { DEFAULT_DJS_OPTIONS, DEFAULT_OPTIONS, VERSION } from "../util/Constants";
+import { DEFAULT_OPTIONS, VERSION } from "../util/Constants";
 import { createLogger, rainbow } from "../util/Util";
 import { CommandRegistry } from "./CommandRegistry";
 import { PluginManager } from "./PluginManager";
@@ -27,7 +28,7 @@ export class SparklClient extends Client {
 	public options: SparklClientOptions;
 	public logger: winston.Logger;
 
-	public config?: ConfigProvider<any>;
+	public config: ConfigProvider<any>;
 	public registry: CommandRegistry;
 
 	private pluginManager: PluginManager;
@@ -41,6 +42,7 @@ export class SparklClient extends Client {
 		this.options = Object.assign(DEFAULT_OPTIONS, options);
 		// Public declarations
 		this.logger = createLogger(this.options.loggerDebugLevel || 0);
+		this.config = new DefaultConfigProvider();
 
 		// Private declarations
 		this.pluginManager = new PluginManager(this);
@@ -92,6 +94,8 @@ export class SparklClient extends Client {
 		this.logger.debug(
 			`Authed for user ${chalk.green(this.user.tag)}, ${this.user.id}`,
 		);
+
+		this.config.init(this);
 
 		if (!this.user.bot) {
 			this.logger.warn(

@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { Collection, Message } from "discord.js";
-import { PathLike, readdirSync, stat, statSync } from "fs";
+import { readdirSync, statSync } from "fs";
 import { isUndefined } from "util";
 
 import { PermissionError } from "../errors/PermissionError";
@@ -13,32 +13,34 @@ const verifyPermission = async (
 	m: Message,
 	cmd: Command<any>,
 ) => {
-	return true;
-	/*
-	const config = await c.config.fetchGuildConfig(m.guild);
+	const permissionConfig = await c.config.get(m.guild, "permissions", {
+		commandPermissionOverrides: {},
+		roles: {},
+		users: {},
+	});
 	let permlevel = cmd.options.permissionLevel;
 	let highestPermission = 0;
 
 	if (
-		config.permissions.commandPermissionOverrides &&
-		Object.keys(config.permissions.commandPermissionOverrides).indexOf(
+		permissionConfig.commandPermissionOverrides &&
+		Object.keys(permissionConfig.commandPermissionOverrides).indexOf(
 			cmd.options.name,
 		) !== -1
 	) {
 		permlevel =
-			config.permissions.commandPermissionOverrides[cmd.options.name];
+			permissionConfig.commandPermissionOverrides[cmd.options.name];
 	}
 
 	highestPermission =
-		config.permissions.users &&
-		Object.keys(config.permissions.users).indexOf(m.author.id) !== -1 &&
-		config.permissions.users[m.author.id] > highestPermission
-			? config.permissions.users[m.author.id]
+		permissionConfig.users &&
+		Object.keys(permissionConfig.users).indexOf(m.author.id) !== -1 &&
+		permissionConfig.users[m.author.id] > highestPermission
+			? permissionConfig.users[m.author.id]
 			: highestPermission;
 
-	if (config.permissions.roles) {
-		Object.keys(config.permissions.roles).map((v) => {
-			const rolePerm = (config.permissions.roles as {
+	if (permissionConfig.roles) {
+		Object.keys(permissionConfig.roles).map((v) => {
+			const rolePerm = (permissionConfig.roles as {
 				[x: string]: number;
 			})[v];
 			if (m.member.roles.get(v) && rolePerm) {
@@ -57,7 +59,6 @@ const verifyPermission = async (
 			requiredPermission: permlevel,
 		});
 	}
-	*/
 };
 
 let COMMAND_INCREMENT = 0;

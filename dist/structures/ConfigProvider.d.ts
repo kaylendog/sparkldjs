@@ -1,6 +1,12 @@
 import { Guild } from "discord.js";
 import { SparklClient } from "../client/Client";
-export declare class ConfigProvider<GuildConfig> {
+export interface BaseGuildConfig {
+    [x: string]: any;
+    prefix: string;
+}
+export declare class ConfigProvider<GuildConfig extends BaseGuildConfig = {
+    prefix: "!";
+}> {
     /**
      * Obtains the ID of the provided guild, or throws an error if it isn't valid
      * @param {Guild|string} guild - Guild to get the ID of
@@ -10,8 +16,8 @@ export declare class ConfigProvider<GuildConfig> {
     constructor();
     /**
      * Initialises the provider by connecting to databases and/or caching all data in memory.
-     * {@link CommandoClient#setProvider} will automatically call this once the client is ready.
-     * @param {CommandoClient} client - Client that will be using the provider
+     * {@link SparklClient#setProvider} will automatically call this once the client is ready.
+     * @param {SparklClient} client - Client that will be using the provider
      * @return {Promise<void>}
      * @abstract
      */

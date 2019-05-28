@@ -3,7 +3,9 @@ import { SparklClient } from "../client/Client";
 export declare interface Plugin {
     pluginName: string;
     client: SparklClient;
-    start(): any;
+    init(): Promise<any>;
+    reload(): Promise<any>;
+    destroy(): Promise<any>;
     sendMessage(dest: string, type: string, ...data: any[]): any;
     onPluginWillStart(): any;
     onReceiveMessage(type: string, ...data: any[]): any;
@@ -14,5 +16,13 @@ export declare class Plugin {
     client: SparklClient;
     logger: winston.Logger;
     constructor(client: SparklClient);
+    /**
+     * Adds a removable event listener to the client - used for reloading.
+     * @param {String} event - The event name
+     * @param {*} listener - The listener to use
+     * @return {Plugin} The plugin object
+     * @abstract
+     */
+    on(event: string, listener: any): this;
 }
-export declare function plugin(name: string, onStart: () => any): (client: SparklClient) => Plugin;
+export declare function plugin(name: string, init: () => any): (client: SparklClient) => Plugin;

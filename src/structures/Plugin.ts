@@ -5,7 +5,9 @@ import { SparklClient } from "../client/Client";
 export declare interface Plugin {
 	pluginName: string;
 	client: SparklClient;
-	start(): any;
+	init(): Promise<any>;
+	reload(): Promise<any>;
+	destroy(): Promise<any>;
 
 	sendMessage(dest: string, type: string, ...data: any[]): any;
 	onPluginWillStart(): any;
@@ -22,14 +24,74 @@ export class Plugin {
 	constructor(client: SparklClient) {
 		this.client = client;
 		this.logger = this.client.logger;
+
+		if (this.constructor.name === "Plugin") {
+			throw new Error("The base Plugin cannot be instantiated.");
+		}
+	}
+	/**
+	 * Initialises the plugin
+	 * @return {*}
+	 * @abstract
+	 */
+	public init(): Promise<any> {
+		throw new Error(
+			`${this.constructor.name} doesn't have an init method.`,
+		);
+	}
+
+	/**
+	 * Called when the plugin is being reloaded
+	 * @return {*}
+	 * @abstract
+	 */
+	public reload(): Promise<any> {
+		throw new Error(
+			`${this.constructor.name} doesn't have a reload method.`,
+		);
+	}
+
+	/**
+	 * Initialises the plugin
+	 * @return {*}
+	 * @abstract
+	 */
+	public destroy(): Promise<any> {
+		throw new Error(
+			`${this.constructor.name} doesn't have a destroy method.`,
+		);
+	}
+
+	/**
+	 * Adds a removable event listener to the client - used for reloading.
+	 * @param {String} event - The event name
+	 * @param {*} listener - The listener to use
+	 * @return {Plugin} The plugin object
+	 * @abstract
+	 */
+	public on(event: string, listener: any): this {
+		this.client.on(event, listener, this.constructor.name);
+		throw new Error(`${this.constructor.name} doesn't have an on method.`);
+	}
+
+	public onPluginWillStart() {
+		throw new Error(
+			`${this.constructor.name} doesn't have an onPluginWillStart method.`,
+		);
+	}
+
+	public onReceiveMessage() {
+		throw new Error(
+			`${this.constructor.name} doesn't have an onReceiveMessage method.`,
+		);
 	}
 }
 
-export function plugin(name: string, onStart: () => any) {
+export function plugin(name: string, init: () => any) {
 	return (client: SparklClient) => {
 		const m = new Plugin(client);
 		m.pluginName = name;
-		m.start = onStart;
+		m.init = init;
 		return m;
 	};
 }

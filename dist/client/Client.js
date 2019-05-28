@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = __importDefault(require("chalk"));
 const discord_js_1 = require("discord.js");
+const DefaultConfigProvider_1 = require("../structures/DefaultConfigProvider");
 const Constants_1 = require("../util/Constants");
 const Util_1 = require("../util/Util");
 const CommandRegistry_1 = require("./CommandRegistry");
@@ -17,15 +18,20 @@ class SparklClient extends discord_js_1.Client {
      * @param {SparklClientOptions} [options] Options for the client
      */
     constructor(options) {
-        super();
+        super(options);
         this.options = Object.assign(Constants_1.DEFAULT_OPTIONS, options);
         // Public declarations
         this.logger = Util_1.createLogger(this.options.loggerDebugLevel || 0);
+        this.config = new DefaultConfigProvider_1.DefaultConfigProvider();
         // Private declarations
         this.pluginManager = new PluginManager_1.PluginManager(this);
         this.registry = new CommandRegistry_1.CommandRegistry(this);
         this.pluginHandlerMap = new Map();
-        super.on("debug", (m) => this.logger.debug(m, "verbose"));
+        this.on("debug", (m) => this.logger.debug(m));
+        this.on("error", (e) => {
+            this.logger.error(e.message);
+            this.logger.debug(e);
+        });
     }
     /**
      * Triggers the login process with the Discord API. Use this to start your bot.
@@ -41,7 +47,7 @@ class SparklClient extends discord_js_1.Client {
             this.logger.info("Starting...");
         }
         else {
-            this.logger.info("Starting... |", Util_1.rainbow("sparkldjs"), Constants_1.VERSION);
+            this.logger.info("Starting... | " + Util_1.rainbow("sparkldjs") + " v" + Constants_1.VERSION);
         }
         if (!token && !this.options.token) {
             throw TypeError("No token provided");
@@ -52,19 +58,18 @@ class SparklClient extends discord_js_1.Client {
         logSettings(this);
         await super.login(this.options.token).catch((err) => {
             this.logger.error(err);
+            this.logger.error("Failed to connect to Discord.");
+            process.exit(err.code);
             return token;
         });
         this.logger.info("Connected and logged into Discord API.");
-        this.logger.debug(`Authed for user ${chalk_1.default.green(super.user.tag)}, ${super.user.id}`);
-        if (!super.user.bot) {
+        this.logger.debug(`Authed for user ${chalk_1.default.green(this.user.tag)}, ${this.user.id}`);
+        this.config.init(this);
+        if (!this.user.bot) {
             this.logger.warn("The automation of user accounts is in violation of Discord's terms of service!");
             this.logger.warn("It is not recommended to proceed with your current token, as your account may be terminated.");
             this.logger.warn("You can read more here: https://discordapp.com/guidelines");
         }
-        super.on("error", (e) => {
-            this.logger.error(e.message);
-            this.logger.debug(e);
-        });
         return this.options.token;
     }
     /**
@@ -122,5 +127,5 @@ function logSettings(client) {
         // @ts-ignore
         client.options[key]}`);
     });
-    client.logger.debug("-".repeat(headerString.length));
+    client.logger.debug("-".repeat(`---------=[ sparkldjs ${Constants_1.VERSION} ]=---------`.length));
 }

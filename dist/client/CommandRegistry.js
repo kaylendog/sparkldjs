@@ -1,26 +1,42 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const chalk_1 = __importDefault(require("chalk"));
 const discord_js_1 = require("discord.js");
+const fs_1 = require("fs");
 const util_1 = require("util");
 const PermissionError_1 = require("../errors/PermissionError");
 const verifyPermission = async (c, m, cmd) => {
-    const config = await c.config.fetchGuildConfig(m.guild);
+    const permissionConfig = await c.config.get(m.guild, "permissions", {
+        commandPermissionOverrides: {},
+        roles: {},
+        users: {},
+    });
     let permlevel = cmd.options.permissionLevel;
     let highestPermission = 0;
-    if (config.permissions.commandPermissionOverrides &&
-        Object.keys(config.permissions.commandPermissionOverrides).indexOf(cmd.options.name) !== -1) {
+    if (permissionConfig.commandPermissionOverrides &&
+        Object.keys(permissionConfig.commandPermissionOverrides).indexOf(cmd.options.name) !== -1) {
         permlevel =
-            config.permissions.commandPermissionOverrides[cmd.options.name];
+            permissionConfig.commandPermissionOverrides[cmd.options.name];
     }
     highestPermission =
-        config.permissions.users &&
-            Object.keys(config.permissions.users).indexOf(m.author.id) !== -1 &&
-            config.permissions.users[m.author.id] > highestPermission
-            ? config.permissions.users[m.author.id]
+        permissionConfig.users &&
+            Object.keys(permissionConfig.users).indexOf(m.author.id) !== -1 &&
+            permissionConfig.users[m.author.id] > highestPermission
+            ? permissionConfig.users[m.author.id]
             : highestPermission;
-    if (config.permissions.roles) {
-        Object.keys(config.permissions.roles).map((v) => {
-            const rolePerm = config.permissions.roles[v];
+    if (permissionConfig.roles) {
+        Object.keys(permissionConfig.roles).map((v) => {
+            const rolePerm = permissionConfig.roles[v];
             if (m.member.roles.get(v) && rolePerm) {
                 highestPermission =
                     rolePerm > highestPermission ? rolePerm : highestPermission;
@@ -47,8 +63,7 @@ class CommandRegistry {
             if (!m.guild) {
                 return;
             }
-            const prefix = await this.client.config.fetchGuildConfig(m.guild)
-                .prefix;
+            const prefix = "!";
             if (m.cleanContent.startsWith(prefix)) {
                 const args = m.content
                     .slice(prefix.length)
@@ -97,6 +112,30 @@ class CommandRegistry {
         }
         this.commands.set(COMMAND_INCREMENT, command);
         COMMAND_INCREMENT += 1;
+    }
+    async loadCommandsIn(path) {
+        let fileStats;
+        try {
+            fileStats = fs_1.statSync(path);
+        }
+        catch (err) {
+            throw Error(err);
+        }
+        let totalCommands = 0;
+        if (fileStats.isDirectory()) {
+            await Promise.all(fs_1.readdirSync(path)
+                .filter((v) => v.split(".").pop() === "js" ||
+                v.split(".").pop() === "ts")
+                .map(async (v) => (totalCommands += await this.loadCommandsIn(`${path}/${v}`))));
+            await Promise.all(fs_1.readdirSync(path)
+                .filter((v) => v.split(".").pop() === v)
+                .map(async (v) => (totalCommands += await this.loadCommandsIn(`${path}/${v}`))));
+        }
+        const toLoad = await Promise.resolve().then(() => __importStar(require(path))).catch((err) => Error(err));
+        totalCommands += Object.keys(toLoad).length;
+        this.client.logger.debug(`Found ${totalCommands} command(s) in ${chalk_1.default.green(`"${path}"`)}`);
+        Object.keys(toLoad).map((v) => this.addCommand(toLoad[v]));
+        return totalCommands;
     }
     async execute(m, a) {
         let max = -1;

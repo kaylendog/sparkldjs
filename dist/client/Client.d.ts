@@ -19,7 +19,7 @@ interface SparklClientOptions extends ClientOptions {
 export declare class SparklClient extends Client {
     options: SparklClientOptions;
     logger: winston.Logger;
-    config?: ConfigProvider<any>;
+    config: ConfigProvider<any>;
     registry: CommandRegistry;
     private pluginManager;
     private pluginHandlerMap;
@@ -53,7 +53,7 @@ export declare class SparklClient extends Client {
      * Adds a config plugin to the client
      * @param {ConfigPlugin|ConfigPluginConstructor} config - Config plugin to use
      */
-    useConfigProvider(provider: ConfigProvider): this;
+    useConfigProvider(provider: ConfigProvider<any>): this;
     on(eventName: string, listener: any, plugin?: string): this;
 }
 export {};

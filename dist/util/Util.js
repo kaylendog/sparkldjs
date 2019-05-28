@@ -48,4 +48,3 @@ exports.createLogger = (debugOption) => {
         }),
     });
 };
-exports.createLogger(0).info("hewwo");

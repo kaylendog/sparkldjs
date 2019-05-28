@@ -15,7 +15,7 @@ export declare class PluginManager {
      * @param {object} data - Plugin data
      * @param {string} data.name - Name of the module
      */
-    createPlugin(name: string, start: () => any): void;
+    createPlugin(name: string, init: () => Promise<any>): void;
     /**
      * Number of plugins stored
      */
