@@ -76,6 +76,7 @@ export class SparklClient extends Client {
 				"Starting... | " + rainbow("sparkldjs") + " v" + VERSION,
 			);
 		}
+
 		if (!token && !this.options.token) {
 			throw TypeError("No token provided");
 		}
@@ -98,6 +99,7 @@ export class SparklClient extends Client {
 			`Authed for user ${chalk.green(this.user.tag)}, ${this.user.id}`,
 		);
 
+		// Initialise config
 		this.config.init(this);
 
 		if (!this.user.bot) {
@@ -120,7 +122,6 @@ export class SparklClient extends Client {
 	 */
 	public disconnect() {
 		super.destroy();
-
 		return this;
 	}
 
@@ -139,6 +140,14 @@ export class SparklClient extends Client {
 		return this;
 	}
 
+	/**
+	 * Add a command to the client
+	 * @param name Name of the command
+	 * @param permissionLevel Permission of the command
+	 * @param syntax Command's syntax
+	 * @param executable The executable to run when the command is triggered
+	 * @param options Customization options
+	 */
 	public command<Syntax extends SyntaxParsable[]>(
 		name: string,
 		permissionLevel: number,

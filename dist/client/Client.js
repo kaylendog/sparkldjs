@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = __importDefault(require("chalk"));
 const discord_js_1 = require("discord.js");
-const DefaultConfigProvider_1 = require("../structures/DefaultConfigProvider");
+const Command_1 = require("../structures/Command");
+const DefaultConfigProvider_1 = require("../structures/providers/DefaultConfigProvider");
 const Constants_1 = require("../util/Constants");
 const Util_1 = require("../util/Util");
 const CommandRegistry_1 = require("./CommandRegistry");
@@ -64,6 +65,7 @@ class SparklClient extends discord_js_1.Client {
         });
         this.logger.info("Connected and logged into Discord API.");
         this.logger.debug(`Authed for user ${chalk_1.default.green(this.user.tag)}, ${this.user.id}`);
+        // Initialise config
         this.config.init(this);
         if (!this.user.bot) {
             this.logger.warn("The automation of user accounts is in violation of Discord's terms of service!");
@@ -92,6 +94,28 @@ class SparklClient extends discord_js_1.Client {
     addPlugin(...modules) {
         modules.forEach((m) => this.pluginManager.addPlugin(m));
         return this;
+    }
+    /**
+     * Add a command to the client
+     * @param name Name of the command
+     * @param permissionLevel Permission of the command
+     * @param syntax Command's syntax
+     * @param executable The executable to run when the command is triggered
+     * @param options Customization options
+     */
+    command(name, permissionLevel, syntax, executable, options) {
+        const group = name.split(".").length > 1
+            ? name.split(".").slice(0, name.split(".").length - 1)
+            : undefined;
+        const nameMinusGroup = name.split(".").pop() || name;
+        return this.registry.addCommand(new Command_1.Command({
+            executable,
+            group,
+            name: nameMinusGroup,
+            permissionLevel,
+            syntax,
+            plugin: options ? options.plugin : undefined,
+        }));
     }
     /**
      * Adds a config plugin to the client
