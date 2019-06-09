@@ -38,10 +38,8 @@ export class Plugin {
 	 * @return {*}
 	 * @abstract
 	 */
-	public init(): Promise<any> {
-		throw new Error(
-			`${this.constructor.name} doesn't have an init method.`,
-		);
+	public async init(): Promise<any> {
+		return;
 	}
 
 	/**
@@ -49,10 +47,8 @@ export class Plugin {
 	 * @return {*}
 	 * @abstract
 	 */
-	public reload(): Promise<any> {
-		throw new Error(
-			`${this.constructor.name} doesn't have a reload method.`,
-		);
+	public async reload(): Promise<any> {
+		return;
 	}
 
 	/**
@@ -60,10 +56,8 @@ export class Plugin {
 	 * @return {*}
 	 * @abstract
 	 */
-	public destroy(): Promise<any> {
-		throw new Error(
-			`${this.constructor.name} doesn't have a destroy method.`,
-		);
+	public async destroy(): Promise<any> {
+		return;
 	}
 
 	/**
@@ -79,15 +73,11 @@ export class Plugin {
 	}
 
 	public onPluginWillStart() {
-		throw new Error(
-			`${this.constructor.name} doesn't have an onPluginWillStart method.`,
-		);
+		return;
 	}
 
 	public onReceiveMessage() {
-		throw new Error(
-			`${this.constructor.name} doesn't have an onReceiveMessage method.`,
-		);
+		return;
 	}
 
 	public command(

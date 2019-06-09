@@ -16,24 +16,24 @@ class Plugin {
      * @return {*}
      * @abstract
      */
-    init() {
-        throw new Error(`${this.constructor.name} doesn't have an init method.`);
+    async init() {
+        return;
     }
     /**
      * Called when the plugin is being reloaded
      * @return {*}
      * @abstract
      */
-    reload() {
-        throw new Error(`${this.constructor.name} doesn't have a reload method.`);
+    async reload() {
+        return;
     }
     /**
      * Initialises the plugin
      * @return {*}
      * @abstract
      */
-    destroy() {
-        throw new Error(`${this.constructor.name} doesn't have a destroy method.`);
+    async destroy() {
+        return;
     }
     /**
      * Adds a removable event listener to the client - used for reloading.
@@ -47,10 +47,10 @@ class Plugin {
         throw new Error(`${this.constructor.name} doesn't have an on method.`);
     }
     onPluginWillStart() {
-        throw new Error(`${this.constructor.name} doesn't have an onPluginWillStart method.`);
+        return;
     }
     onReceiveMessage() {
-        throw new Error(`${this.constructor.name} doesn't have an onReceiveMessage method.`);
+        return;
     }
     command(name, permissionLevel, syntax, exec) {
         this.client.command(name, permissionLevel, syntax, exec);
