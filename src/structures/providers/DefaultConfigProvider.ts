@@ -1,6 +1,6 @@
 import { Collection, Guild } from "discord.js";
 
-import { SparklClient } from "../client/Client";
+import { SparklClient } from "../../client/Client";
 import { BaseGuildConfig, ConfigProvider } from "./ConfigProvider";
 
 export class DefaultConfigProvider extends ConfigProvider {

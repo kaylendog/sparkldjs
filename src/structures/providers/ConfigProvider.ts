@@ -1,6 +1,6 @@
 import { Guild } from "discord.js";
 
-import { SparklClient } from "../client/Client";
+import { SparklClient } from "../../client/Client";
 
 export interface BaseGuildConfig {
 	[x: string]: any;

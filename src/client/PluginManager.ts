@@ -1,6 +1,6 @@
 import { Collection } from "discord.js";
 
-import { Plugin, PluginConstructor } from "../structures/Plugin";
+import { Plugin, PluginConstructor } from "../structures/plugins/Plugin";
 import { SparklClient } from "./Client";
 
 export class PluginManager {
