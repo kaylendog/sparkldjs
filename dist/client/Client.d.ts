@@ -2,8 +2,11 @@ import { Client, ClientOptions, Message } from "discord.js";
 import * as winston from "winston";
 import { PermissionError } from "../errors/PermissionError";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
-import { ConfigProvider } from "../structures/ConfigProvider";
-import { Plugin, PluginConstructor } from "../structures/Plugin";
+import { CommandExecutable } from "../structures/Command";
+import { Plugin, PluginConstructor } from "../structures/plugins/Plugin";
+import { ConfigProvider } from "../structures/providers/ConfigProvider";
+import { BaseType } from "../types/BaseType";
+import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { CommandRegistry } from "./CommandRegistry";
 interface SparklClientOptions extends ClientOptions {
     token?: string;
@@ -49,6 +52,17 @@ export declare class SparklClient extends Client {
      * Adds a plugin to the client
      */
     addPlugin(...modules: Array<Plugin | PluginConstructor>): this;
+    /**
+     * Add a command to the client
+     * @param name Name of the command
+     * @param permissionLevel Permission of the command
+     * @param syntax Command's syntax
+     * @param executable The executable to run when the command is triggered
+     * @param options Customization options
+     */
+    command<Syntax extends SyntaxParsable[]>(name: string, permissionLevel: number, syntax: string | string[] | BaseType[], executable: CommandExecutable<Syntax>, options?: {
+        plugin: string;
+    }): void;
     /**
      * Adds a config plugin to the client
      * @param {ConfigPlugin|ConfigPluginConstructor} config - Config plugin to use

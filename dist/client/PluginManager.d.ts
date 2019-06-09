@@ -1,4 +1,4 @@
-import { Plugin, PluginConstructor } from "../structures/Plugin";
+import { Plugin, PluginConstructor } from "../structures/plugins/Plugin";
 import { SparklClient } from "./Client";
 export declare class PluginManager {
     client: SparklClient;

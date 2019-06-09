@@ -4,9 +4,12 @@ import * as winston from "winston";
 
 import { PermissionError } from "../errors/PermissionError";
 import { SyntaxParseError } from "../errors/SyntaxParseError";
-import { ConfigProvider } from "../structures/ConfigProvider";
-import { DefaultConfigProvider } from "../structures/DefaultConfigProvider";
-import { Plugin, PluginConstructor } from "../structures/Plugin";
+import { Command, CommandExecutable } from "../structures/Command";
+import { Plugin, PluginConstructor } from "../structures/plugins/Plugin";
+import { ConfigProvider } from "../structures/providers/ConfigProvider";
+import { DefaultConfigProvider } from "../structures/providers/DefaultConfigProvider";
+import { BaseType } from "../types/BaseType";
+import { SyntaxParsable } from "../types/SyntaxDefinitions";
 import { DEFAULT_OPTIONS, VERSION } from "../util/Constants";
 import { createLogger, rainbow } from "../util/Util";
 import { CommandRegistry } from "./CommandRegistry";
@@ -73,6 +76,7 @@ export class SparklClient extends Client {
 				"Starting... | " + rainbow("sparkldjs") + " v" + VERSION,
 			);
 		}
+
 		if (!token && !this.options.token) {
 			throw TypeError("No token provided");
 		}
@@ -95,6 +99,7 @@ export class SparklClient extends Client {
 			`Authed for user ${chalk.green(this.user.tag)}, ${this.user.id}`,
 		);
 
+		// Initialise config
 		this.config.init(this);
 
 		if (!this.user.bot) {
@@ -117,7 +122,6 @@ export class SparklClient extends Client {
 	 */
 	public disconnect() {
 		super.destroy();
-
 		return this;
 	}
 
@@ -134,6 +138,40 @@ export class SparklClient extends Client {
 	public addPlugin(...modules: Array<Plugin | PluginConstructor>) {
 		modules.forEach((m) => this.pluginManager.addPlugin(m));
 		return this;
+	}
+
+	/**
+	 * Add a command to the client
+	 * @param name Name of the command
+	 * @param permissionLevel Permission of the command
+	 * @param syntax Command's syntax
+	 * @param executable The executable to run when the command is triggered
+	 * @param options Customization options
+	 */
+	public command<Syntax extends SyntaxParsable[]>(
+		name: string,
+		permissionLevel: number,
+		syntax: string | string[] | BaseType[],
+		executable: CommandExecutable<Syntax>,
+		options?: { plugin: string },
+	) {
+		const group =
+			name.split(".").length > 1
+				? name.split(".").slice(0, name.split(".").length - 1)
+				: undefined;
+		const nameMinusGroup = name.split(".").pop() || name;
+
+		return this.registry.addCommand(
+			new Command<Syntax>({
+				executable,
+				group,
+				name: nameMinusGroup,
+				permissionLevel,
+				syntax,
+
+				plugin: options ? options.plugin : undefined,
+			}),
+		);
 	}
 
 	/**

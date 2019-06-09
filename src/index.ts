@@ -7,8 +7,8 @@ import { StringType } from "./types/StringType";
 import { UserType } from "./types/UserType";
 
 export { SparklClient } from "./client/Client";
-export { Plugin } from "./structures/Plugin";
-export { PluginWithConfig } from "./structures/PluginWithConfig";
+export { Plugin } from "./structures/plugins/Plugin";
+export { PluginWithConfig } from "./structures/plugins/PluginWithConfig";
 export { Command } from "./structures/Command";
 
 export { Embed } from "./structures/Embed";

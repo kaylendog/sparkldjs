@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const Plugin_1 = require("../structures/Plugin");
+const Plugin_1 = require("../structures/plugins/Plugin");
 class PluginManager {
     constructor(client) {
         this.client = client;
