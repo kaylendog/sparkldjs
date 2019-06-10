@@ -45,7 +45,7 @@ export const createLogger = (debugOption: 0 | 1 | 2) => {
 			}),
 		),
 		transports: new winston.transports.Console({
-			level: debugOption === 1 ? "debug" : "info",
+			level: debugOption > 0 ? "debug" : "info",
 		}),
 	});
 };

@@ -57,6 +57,7 @@ class SparklClient extends discord_js_1.Client {
             this.options.token = token;
         }
         logSettings(this);
+        this.logger.debug("Attempting to connect to Discord...");
         await super.login(this.options.token).catch((err) => {
             this.logger.error(err);
             this.logger.error("Failed to connect to Discord.");
@@ -66,12 +67,15 @@ class SparklClient extends discord_js_1.Client {
         this.logger.info("Connected and logged into Discord API.");
         this.logger.debug(`Authed for user ${chalk_1.default.green(this.user.tag)}, ${this.user.id}`);
         // Initialise config
-        this.config.init(this);
+        this.logger.debug("[config] Initializing config provider...");
+        await this.config.init(this);
+        this.logger.debug("[config] Done.");
         if (!this.user.bot) {
             this.logger.warn("The automation of user accounts is in violation of Discord's terms of service!");
             this.logger.warn("It is not recommended to proceed with your current token, as your account may be terminated.");
             this.logger.warn("You can read more here: https://discordapp.com/guidelines");
         }
+        this.logger.debug("Login flow complete.");
         return this.options.token;
     }
     /**

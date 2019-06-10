@@ -9,15 +9,29 @@ class PluginManager {
         this.hasStarted = false;
         this.client.on("ready", async () => {
             if (this.pluginCount < 1) {
-                return this.client.logger.debug(`No plugin(s) to initialise`);
+                return this.client.logger.debug(`[plugins] No plugin(s) to initialise`);
             }
-            this.client.logger.debug(`Warming up plugins - ${this.pluginCount} plugin(s) to initialise...`);
+            this.client.logger.debug(`[plugins] Warming up plugins - ${this.pluginCount} plugin(s) to initialise...`);
             // Wait for plugins to initialise
-            const pluginWillStartIterator = this.plugins.map(async (v) => await (v.onPluginWillStart ? v.onPluginWillStart() : null));
+            this.client.logger.debug("[plugins] Telling plugins they will be started...");
+            const pluginWillStartIterator = this.plugins.map(async (v, i) => {
+                if (v.onPluginWillStart) {
+                    this.client.logger.debug(`[plugins] Calling onPluginWillStart for ${v.pluginName}`);
+                    return v.onPluginWillStart();
+                }
+            });
             await Promise.all(pluginWillStartIterator);
             // Synchronously init plugins
-            this.plugins.forEach((v) => (v.init ? v.init() : null));
-            this.client.logger.info("Done.");
+            this.client.logger.debug("Starting plugins...");
+            let count = 1;
+            this.plugins.forEach((v) => {
+                if (!v.init) {
+                    return;
+                }
+                this.client.logger.debug(`[${count}/${this.plugins.size}] calling init for ${v.pluginName}`);
+                count += 1;
+            });
+            this.client.logger.debug("Done.");
             this.hasStarted = true;
         });
     }
@@ -57,9 +71,9 @@ class PluginManager {
         return this.plugins.size;
     }
     sendMessage(dest, type, ...data) {
-        const plugin = this.plugins.get("dest");
-        if (plugin) {
-            plugin.onReceiveMessage(type, data);
+        const pluginDestination = this.plugins.get("dest");
+        if (pluginDestination) {
+            pluginDestination.onReceiveMessage(type, data);
         }
     }
 }

@@ -87,6 +87,7 @@ export class SparklClient extends Client {
 
 		logSettings(this);
 
+		this.logger.debug("Attempting to connect to Discord...");
 		await super.login(this.options.token).catch((err) => {
 			this.logger.error(err);
 			this.logger.error("Failed to connect to Discord.");
@@ -100,7 +101,9 @@ export class SparklClient extends Client {
 		);
 
 		// Initialise config
-		this.config.init(this);
+		this.logger.debug("[config] Initializing config provider...");
+		await this.config.init(this);
+		this.logger.debug("[config] Done.");
 
 		if (!this.user.bot) {
 			this.logger.warn(
@@ -114,6 +117,7 @@ export class SparklClient extends Client {
 			);
 		}
 
+		this.logger.debug("Login flow complete.");
 		return this.options.token as string;
 	}
 

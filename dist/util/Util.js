@@ -44,7 +44,7 @@ exports.createLogger = (debugOption) => {
             return `${chalk_1.default.gray(ts)} ${chalk_1.default.white("|")} ${level} ${chalk_1.default.white("|")} ${message}`;
         })),
         transports: new winston.transports.Console({
-            level: debugOption === 1 ? "debug" : "info",
+            level: debugOption > 0 ? "debug" : "info",
         }),
     });
 };
