@@ -14,6 +14,7 @@ class PluginManager {
             this.client.logger.debug(`[plugins] Warming up plugins - ${this.pluginCount} plugin(s) to initialise...`);
             // Wait for plugins to initialise
             this.client.logger.debug("[plugins] Telling plugins they will be started...");
+            console.log(this.plugins);
             const pluginWillStartIterator = this.plugins.map(async (v, i) => {
                 if (v.onPluginWillStart) {
                     this.client.logger.debug(`[plugins] Calling onPluginWillStart for ${v.pluginName}`);
@@ -29,6 +30,7 @@ class PluginManager {
                     return;
                 }
                 this.client.logger.debug(`[${count}/${this.plugins.size}] calling init for ${v.pluginName}`);
+                v.init();
                 count += 1;
             });
             this.client.logger.debug("Done.");

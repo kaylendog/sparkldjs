@@ -20,14 +20,7 @@ export declare class Plugin {
     client: SparklClient;
     logger: winston.Logger;
     constructor(client: SparklClient);
-    /**
-     * Adds a removable event listener to the client - used for reloading.
-     * @param {String} event - The event name
-     * @param {*} listener - The listener to use
-     * @return {Plugin} The plugin object
-     * @abstract
-     */
-    on(event: string, listener: any): this;
     command(name: string, permissionLevel: number, syntax: string, exec: (c: SparklClient, m: Message, a: any[]) => any): this;
+    on(eventName: string, listener: (...args: any) => any): this;
 }
 export declare function plugin(name: string, init: () => any): (client: SparklClient) => Plugin;

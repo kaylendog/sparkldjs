@@ -67,10 +67,6 @@ export class Plugin {
 	 * @return {Plugin} The plugin object
 	 * @abstract
 	 */
-	public on(event: string, listener: any): this {
-		this.client.on(event, listener, this.constructor.name);
-		throw new Error(`${this.constructor.name} doesn't have an on method.`);
-	}
 
 	public onPluginWillStart() {
 		return;
@@ -87,6 +83,11 @@ export class Plugin {
 		exec: (c: SparklClient, m: Message, a: any[]) => any,
 	) {
 		this.client.command(name, permissionLevel, syntax, exec);
+		return this;
+	}
+
+	public on(eventName: string, listener: (...args: any) => any): this {
+		this.client.on(eventName, listener, this.pluginName);
 		return this;
 	}
 }

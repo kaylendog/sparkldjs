@@ -75,7 +75,7 @@ export class CommandRegistry {
 			if (!m.guild) {
 				return;
 			}
-			const prefix = "!";
+			const prefix = this.client.config.get(m.guild.id, "prefix", "!");
 
 			if (m.cleanContent.startsWith(prefix)) {
 				const args = m.content

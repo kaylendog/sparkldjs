@@ -30,6 +30,7 @@ export class PluginManager {
 			this.client.logger.debug(
 				"[plugins] Telling plugins they will be started...",
 			);
+			console.log(this.plugins);
 			const pluginWillStartIterator = this.plugins.map(async (v, i) => {
 				if (v.onPluginWillStart) {
 					this.client.logger.debug(
@@ -54,6 +55,7 @@ export class PluginManager {
 						v.pluginName
 					}`,
 				);
+				v.init();
 				count += 1;
 			});
 			this.client.logger.debug("Done.");

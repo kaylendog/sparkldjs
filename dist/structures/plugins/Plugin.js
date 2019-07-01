@@ -42,10 +42,6 @@ class Plugin {
      * @return {Plugin} The plugin object
      * @abstract
      */
-    on(event, listener) {
-        this.client.on(event, listener, this.constructor.name);
-        throw new Error(`${this.constructor.name} doesn't have an on method.`);
-    }
     onPluginWillStart() {
         return;
     }
@@ -54,6 +50,10 @@ class Plugin {
     }
     command(name, permissionLevel, syntax, exec) {
         this.client.command(name, permissionLevel, syntax, exec);
+        return this;
+    }
+    on(eventName, listener) {
+        this.client.on(eventName, listener, this.pluginName);
         return this;
     }
 }
