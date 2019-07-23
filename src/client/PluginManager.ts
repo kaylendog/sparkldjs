@@ -14,7 +14,7 @@ export class PluginManager {
 
 		this.hasStarted = false;
 
-		this.client.once("ready", async () => {
+		this.client.on("ready", async () => {
 			if (this.pluginCount < 1) {
 				return this.client.logger.debug(
 					`[plugins] No plugin(s) to initialise`,
