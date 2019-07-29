@@ -7,7 +7,7 @@ class PluginManager {
         this.client = client;
         this.plugins = new discord_js_1.Collection();
         this.hasStarted = false;
-        this.client.on("ready", async () => {
+        this.client.once("ready", async () => {
             if (this.pluginCount < 1) {
                 return this.client.logger.debug(`No plugin(s) to initialise`);
             }
